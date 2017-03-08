@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineMapping", "InlineMapping\InlineMapping.csproj", "{42A8FC94-8CC3-4477-9A9F-A65E12F519E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineMapping.Vsix", "InlineMapping.Vsix\InlineMapping.Vsix.csproj", "{7E97DFA4-449F-4D0F-A15B-2CAB2759F0F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineMapping.Tests", "InlineMapping.Tests\InlineMapping.Tests.csproj", "{5A332266-E8B9-4B2F-9244-52418C1508AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42A8FC94-8CC3-4477-9A9F-A65E12F519E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42A8FC94-8CC3-4477-9A9F-A65E12F519E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42A8FC94-8CC3-4477-9A9F-A65E12F519E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42A8FC94-8CC3-4477-9A9F-A65E12F519E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E97DFA4-449F-4D0F-A15B-2CAB2759F0F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E97DFA4-449F-4D0F-A15B-2CAB2759F0F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E97DFA4-449F-4D0F-A15B-2CAB2759F0F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E97DFA4-449F-4D0F-A15B-2CAB2759F0F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A332266-E8B9-4B2F-9244-52418C1508AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A332266-E8B9-4B2F-9244-52418C1508AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A332266-E8B9-4B2F-9244-52418C1508AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A332266-E8B9-4B2F-9244-52418C1508AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
