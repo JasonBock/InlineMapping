@@ -1,13 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30404.54
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineMapping", "InlineMapping\InlineMapping.csproj", "{42A8FC94-8CC3-4477-9A9F-A65E12F519E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineMapping", "InlineMapping\InlineMapping.csproj", "{6F792E2A-A502-455C-8416-8176F3C5C8DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineMapping.Vsix", "InlineMapping.Vsix\InlineMapping.Vsix.csproj", "{7E97DFA4-449F-4D0F-A15B-2CAB2759F0F4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{57B6A528-141D-45F7-A983-6C25675EDD51}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		README.md = README.md
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineMapping.Tests", "InlineMapping.Tests\InlineMapping.Tests.csproj", "{5A332266-E8B9-4B2F-9244-52418C1508AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineMapping.Tests", "InlineMapping.Tests\InlineMapping.Tests.csproj", "{D1F031AC-B713-410A-B7A9-B832A1E96E19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,20 +21,19 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{42A8FC94-8CC3-4477-9A9F-A65E12F519E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42A8FC94-8CC3-4477-9A9F-A65E12F519E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42A8FC94-8CC3-4477-9A9F-A65E12F519E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42A8FC94-8CC3-4477-9A9F-A65E12F519E9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7E97DFA4-449F-4D0F-A15B-2CAB2759F0F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E97DFA4-449F-4D0F-A15B-2CAB2759F0F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E97DFA4-449F-4D0F-A15B-2CAB2759F0F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E97DFA4-449F-4D0F-A15B-2CAB2759F0F4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A332266-E8B9-4B2F-9244-52418C1508AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A332266-E8B9-4B2F-9244-52418C1508AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A332266-E8B9-4B2F-9244-52418C1508AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A332266-E8B9-4B2F-9244-52418C1508AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F792E2A-A502-455C-8416-8176F3C5C8DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F792E2A-A502-455C-8416-8176F3C5C8DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F792E2A-A502-455C-8416-8176F3C5C8DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F792E2A-A502-455C-8416-8176F3C5C8DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1F031AC-B713-410A-B7A9-B832A1E96E19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1F031AC-B713-410A-B7A9-B832A1E96E19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1F031AC-B713-410A-B7A9-B832A1E96E19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1F031AC-B713-410A-B7A9-B832A1E96E19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {970BDF17-B784-4DE5-A6F0-4E52AC404785}
 	EndGlobalSection
 EndGlobal
