@@ -1,7 +1,6 @@
 ﻿using InlineMapping.Extensions;
 using InlineMapping.Metadata;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
@@ -15,13 +14,11 @@ namespace InlineMapping
 		: ISourceGenerator
 	{
 		private static (string? name, SourceText? text) GenerateMapping(
-			SemanticModel model, ITypeSymbol sourceType, AttributeData attributeData)
+			ITypeSymbol sourceType, AttributeData attributeData)
 		{
-			var destinationType = (model.GetDeclaredSymbol(
-				(attributeData.ConstructorArguments[0].Value as TypeOfExpressionSyntax)!.Type) as INamedTypeSymbol)!;
+			var destinationType = (INamedTypeSymbol)attributeData.ConstructorArguments[0].Value!;
 
-			if(destinationType.Constructors.Length == 0 ||
-				destinationType.Constructors.Any(_ => _.DeclaredAccessibility == Accessibility.Public && _.Parameters.Length == 0))
+			if(destinationType.Constructors.Any(_ => _.DeclaredAccessibility == Accessibility.Public && _.Parameters.Length == 0))
 			{
 				var destinationProperties = destinationType.GetMembers().OfType<IPropertySymbol>();
 				var maps = new List<string>();
@@ -41,6 +38,7 @@ namespace InlineMapping
 
 				if (maps.Count > 0)
 				{
+					// TODO: If the types are not in namespaces, then we can't do ToDisplayString() like we are.
 					var text = SourceText.From(
 @$"using {destinationType.ContainingNamespace.ToDisplayString()};
 
@@ -85,7 +83,7 @@ namespace {sourceType.ContainingNamespace.ToDisplayString()}
 						foreach (var mappingAttribute in candidateClassSymbol.GetAttributes().Where(
 							_ => _.AttributeClass!.Equals(mapToSymbol, SymbolEqualityComparer.Default)))
 						{
-							var (name, text) = MapToGenerator.GenerateMapping(model, candidateClassSymbol, mappingAttribute);
+							var (name, text) = MapToGenerator.GenerateMapping(candidateClassSymbol, mappingAttribute);
 
 							if(name is not null && text is not null)
 							{
