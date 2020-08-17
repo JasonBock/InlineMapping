@@ -1,4 +1,5 @@
 ﻿using InlineMapping.Extensions;
+using InlineMapping.Metadata;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -9,6 +10,7 @@ using System.Text;
 
 namespace InlineMapping
 {
+	[Generator]
 	public sealed class MapToGenerator
 		: ISourceGenerator
 	{
@@ -37,7 +39,6 @@ namespace InlineMapping
 					}
 				}
 
-				// What if we don't find any properties to map?
 				if (maps.Count > 0)
 				{
 					var text = SourceText.From(
