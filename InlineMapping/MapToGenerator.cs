@@ -38,21 +38,33 @@ namespace InlineMapping
 
 				if (maps.Count > 0)
 				{
-					// TODO: If the types are not in namespaces, then we can't do ToDisplayString() like we are.
-					var text = SourceText.From(
-@$"using {destinationType.ContainingNamespace.ToDisplayString()};
+					// Also, if the namespace is the same as one of the usings, or it's "in" one of them, 
+					// we probably don't need to declare the namespace explicitly then.
+					var usingStatements = new SortedSet<string>
+					{
+						"using System;"
+					};
 
-namespace {sourceType.ContainingNamespace.ToDisplayString()}
-{{
-	public static partial class {sourceType.Name}MapToExtensions
+					if (!destinationType.ContainingNamespace.IsGlobalNamespace)
+					{
+						usingStatements.Add($"using {destinationType.ContainingNamespace.ToDisplayString()};");
+					}
+
+					var namespaceStartingStatement = !sourceType.ContainingNamespace.IsGlobalNamespace ?
+						$"namespace {sourceType.ContainingNamespace.ToDisplayString()}{Environment.NewLine}{{{Environment.NewLine}" : string.Empty;
+					var namespaceEndingStatement = !sourceType.ContainingNamespace.IsGlobalNamespace ?
+						$"{Environment.NewLine}}}" : string.Empty;
+
+					var text = SourceText.From(
+@$"{string.Join(Environment.NewLine, usingStatements)}{Environment.NewLine}{Environment.NewLine}{namespaceStartingStatement}	public static partial class {sourceType.Name}MapToExtensions
 	{{
 		public static {destinationType.Name} MapTo{destinationType.Name}(this {sourceType.Name} self) =>
-			new {destinationType.Name}
-			{{
-{string.Join(Environment.NewLine, maps)}
-			}};
-	}}
-}}", Encoding.UTF8);
+			self is null ? throw new ArgumentNullException(nameof(self)) :
+				new {destinationType.Name}
+				{{
+	{string.Join(Environment.NewLine, maps)}
+				}};
+	}}{namespaceEndingStatement}", Encoding.UTF8);
 					return ($"{sourceType.Name}_To_{destinationType.Name}_Map.g.cs", text);
 				}
 				else
