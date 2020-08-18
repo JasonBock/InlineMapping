@@ -28,7 +28,7 @@ namespace InlineMapping
 					var destinationProperty = destinationProperties.FirstOrDefault(
 						_ => _.Name == sourceProperty.Name &&
 							_.SetMethod is not null &&
-							_.Type.IsAssignableFrom(sourceProperty.Type));
+							_.Type.Equals(sourceProperty.Type, SymbolEqualityComparer.Default));
 
 					if (destinationProperty is not null)
 					{
@@ -80,7 +80,6 @@ namespace InlineMapping
 
 		public void Execute(SourceGeneratorContext context)
 		{
-			//System.Diagnostics.Debugger.Launch();
 			if (context.SyntaxReceiver is MapToReceiver receiver)
 			{
 				var compilation = context.Compilation;
