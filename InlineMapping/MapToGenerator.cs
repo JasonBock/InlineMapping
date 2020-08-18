@@ -80,6 +80,7 @@ namespace InlineMapping
 
 		public void Execute(SourceGeneratorContext context)
 		{
+			//System.Diagnostics.Debugger.Launch();
 			if (context.SyntaxReceiver is MapToReceiver receiver)
 			{
 				var compilation = context.Compilation;

@@ -4,10 +4,10 @@ using System;
 namespace InlineMapping.Host
 {
 	[MapTo(typeof(Destination))]
-	public record Source
+	public class Source
 	{
-		public Guid Id { get; init; }
-		public string? Name { get; init; }
-		public DateTime When { get; init; }
+		public Guid Id { get; set; }
+		public string? Name { get; set; }
+		public DateTime When { get; set; }
 	}
 }

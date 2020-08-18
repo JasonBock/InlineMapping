@@ -16,18 +16,23 @@ namespace InlineMapping.TestHost
 			// TODO: Do this with records and init
 			var (diagnostics, output) = Program.GetGeneratedOutput(
 @"using InlineMapping.Metadata;
+using System;
 
 namespace TestItOut
 {
-	public class Destination 
-	{ 
-		public int Id { get; set; }
+	public class Destination
+	{
+		public uint Age { get; set; }
+		public Guid Id { get; set; }
+		public string? Name { get; set; }
 	}
 
 	[MapTo(typeof(Destination))]
-	public class Source 
-	{ 
-		public int Id { get; set; }
+	public class Source
+	{
+		public Guid Id { get; set; }
+		public string? Name { get; set; }
+		public DateTime When { get; set; }
 	}
 }");
 
