@@ -38,6 +38,12 @@ namespace TestItOut
 }");
 
 			Console.Out.WriteLine($"diagnostics.Length is {diagnostics.Length}.");
+
+			foreach(var diagnostic in diagnostics)
+			{
+				Console.Out.WriteLine(diagnostic);
+			}
+
 			Console.Out.WriteLine(output);
 		}
 
