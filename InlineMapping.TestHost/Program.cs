@@ -7,6 +7,11 @@ using System.Linq;
 
 namespace InlineMapping.TestHost
 {
+	public record Thingee
+	{
+		public uint Age { get; set; }
+	}
+
 	public static class Program
 	{
 		public static void Main() => Program.GenerateHappyPath();
@@ -22,25 +27,13 @@ namespace TestItOut
 {
 	public class Destination
 	{
-		public uint Age { get; set; }
-#pragma warning disable CA1819 // Properties should not return arrays
-		public byte[]? Buffer { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
-		public Guid Id { get; set; }
-		public string? Name { get; set; }
-		public DateTime When { get; set; }
+		public string Name { get; set; }
 	}
 
 	[MapTo(typeof(Destination))]
 	public class Source
 	{
-		public uint Age { get; set; }
-#pragma warning disable CA1819 // Properties should not return arrays
-		public byte[]? Buffer { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
-		public Guid Id { get; set; }
 		public string? Name { get; set; }
-		public DateTime When { get; set; }
 	}
 }");
 
