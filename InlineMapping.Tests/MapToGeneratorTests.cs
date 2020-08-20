@@ -22,7 +22,7 @@ public class Source { }");
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(diagnostics.Length, Is.GreaterThan(0));
+				Assert.That(diagnostics.Length, Is.EqualTo(0));
 			});
 		}
 
