@@ -32,14 +32,14 @@ namespace InlineMapping
 			// Or should it? Do we do exact match on nullability?
 			// We should probably report a diagnostic in this case if we decide to be "strict" with the
 			// nullable annotation.
-			var destinationProperties = destinationType.GetMembers().OfType<IPropertySymbol>();
+			var destinationProperties = destinationType.GetMembers().OfType<IPropertySymbol>()
+				.Where(_ => _.SetMethod is not null);
 			var maps = new List<string>();
 
 			foreach (var sourceProperty in sourceType.GetMembers().OfType<IPropertySymbol>().Where(_ => _.GetMethod is not null))
 			{
 				var destinationProperty = destinationProperties.FirstOrDefault(
 					_ => _.Name == sourceProperty.Name &&
-						_.SetMethod is not null &&
 						_.Type.Equals(sourceProperty.Type, SymbolEqualityComparer.Default));
 
 				if (destinationProperty is not null)

@@ -28,16 +28,17 @@ namespace InlineMapping.PerformanceTests
 		public Destination MapUsingReflection()
 		{
 			var destination = new Destination();
-			var sourceProperties = typeof(Source).GetProperties(BindingFlags.Instance | BindingFlags.Public)
-				.Where(_ => _.CanRead);
+			var destinationProperties = typeof(Destination).GetProperties(BindingFlags.Instance | BindingFlags.Public)
+				.Where(_ => _.CanWrite);
 
-			foreach (var destinationProperty in typeof(Destination).GetProperties(BindingFlags.Instance | BindingFlags.Public)
-				.Where(_ => _.CanWrite))
+			foreach (var sourceProperty in typeof(Source).GetProperties(BindingFlags.Instance | BindingFlags.Public)
+				.Where(_ => _.CanRead))
 			{
-				var sourceProperty = sourceProperties.FirstOrDefault(_ => _.Name == destinationProperty.Name &&
-					_.PropertyType == destinationProperty.PropertyType);
+				var destinationProperty = destinationProperties.FirstOrDefault(_ => 
+					_.Name == sourceProperty.Name &&
+					_.PropertyType == sourceProperty.PropertyType);
 
-				if(sourceProperty is not null)
+				if(destinationProperty is not null)
 				{
 					destinationProperty.SetValue(destination, sourceProperty.GetValue(this.source));
 				}
