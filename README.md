@@ -1,2 +1,2 @@
 # InlineMapping
-An experiment to use a Compiler API analyzer and a code fix to generate object mapping code.
+An experiment to use a source generator to generate object mapping code.
