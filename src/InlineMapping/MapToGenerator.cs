@@ -69,7 +69,7 @@ namespace InlineMapping
 			{
 				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
 					NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title,
-					string.Format(CultureInfo.CurrentCulture, NoMatchDescriptorConstants.Message, remainingDestinationProperty.Name, "source", destinationType.Name),
+					string.Format(CultureInfo.CurrentCulture, NoMatchDescriptorConstants.Message, remainingDestinationProperty.Name, "destination", destinationType.Name),
 					DescriptorConstants.Usage, DiagnosticSeverity.Info, true,
 					helpLinkUri: HelpUrlBuilder.Build(
 						NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title)), null));
