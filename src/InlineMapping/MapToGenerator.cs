@@ -23,7 +23,8 @@ namespace InlineMapping
 			if (!destinationType.Constructors.Any(_ => _.DeclaredAccessibility == Accessibility.Public && _.Parameters.Length == 0))
 			{
 				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor("IM0001", "Missing No-Argument Constructor On Destination Type",
-					"The destination type must have a public no-argument constructor.", "Usage", DiagnosticSeverity.Error, true),
+					"The destination type must have a public no-argument constructor.", "Usage", DiagnosticSeverity.Error, true,
+					helpLinkUri: HelpUrlBuilder.Build("IM0001", "Missing No-Argument Constructor On Destination Type")),
 					attributeData.ApplicationSyntaxReference!.GetSyntax().GetLocation()));
 			}
 
@@ -53,7 +54,8 @@ namespace InlineMapping
 			if (maps.Count == 0)
 			{
 				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor("IM0002", "No Property Maps Found",
-					"There were no properties found between the source and destination types to map.", "Usage", DiagnosticSeverity.Error, true),
+					"There were no properties found between the source and destination types to map.", "Usage", DiagnosticSeverity.Error, true, 
+					helpLinkUri: HelpUrlBuilder.Build("IM0002", "No Property Maps Found")),
 					attributeData.ApplicationSyntaxReference!.GetSyntax().GetLocation()));
 			}
 
