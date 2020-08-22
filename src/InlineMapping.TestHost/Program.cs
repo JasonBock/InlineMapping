@@ -7,11 +7,6 @@ using System.Linq;
 
 namespace InlineMapping.TestHost
 {
-	public record Thingee
-	{
-		public uint Age { get; set; }
-	}
-
 	public static class Program
 	{
 		public static void Main() => Program.GenerateHappyPath();
@@ -22,15 +17,16 @@ namespace InlineMapping.TestHost
 			var (diagnostics, output) = Program.GetGeneratedOutput(
 @"using InlineMapping.Metadata;
 
-public class Destination 
-{ 
-	public string Id { get; set; }
+[MapTo(typeof(Destination)]
+public class Source
+{
+	public int Id { get; set; }
+	public string Name { get; set; }
 }
 
-[MapTo(typeof(Destination)]
-public class Source 
-{ 
-	public string Id { get; set; }
+public class Destination
+{
+	public int Id { get; set; }
 }");
 
 			Console.Out.WriteLine($"diagnostics.Length is {diagnostics.Length}.");

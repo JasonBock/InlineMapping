@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -50,8 +51,28 @@ namespace InlineMapping
 					if (destinationProperty is not null)
 					{
 						maps.Add($"\t\t\t\t\t{destinationProperty.Name} = self.{sourceProperty.Name},");
+						destinationProperties.Remove(destinationProperty);
+					}
+					else
+					{
+						diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
+							NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title,
+							string.Format(CultureInfo.CurrentCulture, NoMatchDescriptorConstants.Message, sourceProperty.Name, "source", sourceType.Name), 
+							DescriptorConstants.Usage, DiagnosticSeverity.Info, true,
+							helpLinkUri: HelpUrlBuilder.Build(
+								NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title)), null));
 					}
 				}
+			}
+
+			foreach(var remainingDestinationProperty in destinationProperties)
+			{
+				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
+					NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title,
+					string.Format(CultureInfo.CurrentCulture, NoMatchDescriptorConstants.Message, remainingDestinationProperty.Name, "source", destinationType.Name),
+					DescriptorConstants.Usage, DiagnosticSeverity.Info, true,
+					helpLinkUri: HelpUrlBuilder.Build(
+						NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title)), null));
 			}
 
 			if (maps.Count == 0)
@@ -64,7 +85,7 @@ namespace InlineMapping
 					attributeData.ApplicationSyntaxReference!.GetSyntax().GetLocation()));
 			}
 
-			if(diagnostics.Count == 0)
+			if(!diagnostics.Any(_ => _.Severity == DiagnosticSeverity.Error))
 			{
 				// TODO: If the namespace is the same as one of the usings, or it's "in" one of them, 
 				// we probably don't need to declare the namespace explicitly then.
