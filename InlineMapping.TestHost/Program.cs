@@ -21,20 +21,16 @@ namespace InlineMapping.TestHost
 			// TODO: Do this with records and init
 			var (diagnostics, output) = Program.GetGeneratedOutput(
 @"using InlineMapping.Metadata;
-using System;
 
-namespace TestItOut
-{
-	public class Destination
-	{
-		public string Name { get; set; }
-	}
+public class Destination 
+{ 
+	public string Id { get; set; }
+}
 
-	[MapTo(typeof(Destination))]
-	public class Source
-	{
-		public string? Name { get; set; }
-	}
+[MapTo(typeof(Destination)]
+public class Source 
+{ 
+	public string Id { get; set; }
 }");
 
 			Console.Out.WriteLine($"diagnostics.Length is {diagnostics.Length}.");

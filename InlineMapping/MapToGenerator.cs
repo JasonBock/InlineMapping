@@ -27,24 +27,26 @@ namespace InlineMapping
 					attributeData.ApplicationSyntaxReference!.GetSyntax().GetLocation()));
 			}
 
-			// TODO: If the destination property is non-nullable, then the source must be as well.
-			// If it's nullable, it doesn't matter.
-			// Or should it? Do we do exact match on nullability?
-			// We should probably report a diagnostic in this case if we decide to be "strict" with the
-			// nullable annotation.
-			var destinationProperties = destinationType.GetMembers().OfType<IPropertySymbol>()
-				.Where(_ => _.SetMethod is not null);
 			var maps = new List<string>();
 
-			foreach (var sourceProperty in sourceType.GetMembers().OfType<IPropertySymbol>().Where(_ => _.GetMethod is not null))
-			{
-				var destinationProperty = destinationProperties.FirstOrDefault(
-					_ => _.Name == sourceProperty.Name &&
-						_.Type.Equals(sourceProperty.Type, SymbolEqualityComparer.Default));
+			var destinationProperties = destinationType.GetMembers().OfType<IPropertySymbol>()
+				.Where(_ => _.DeclaredAccessibility == Accessibility.Public && _.SetMethod is not null).ToList();
 
-				if (destinationProperty is not null)
+			if(destinationProperties.Count > 0)
+			{
+				foreach (var sourceProperty in sourceType.GetMembers().OfType<IPropertySymbol>()
+					.Where(_ => _.DeclaredAccessibility == Accessibility.Public && _.GetMethod is not null))
 				{
-					maps.Add($"\t\t\t\t\t{destinationProperty.Name} = self.{sourceProperty.Name},");
+					var destinationProperty = destinationProperties.FirstOrDefault(
+						_ => _.Name == sourceProperty.Name &&
+							_.Type.Equals(sourceProperty.Type, SymbolEqualityComparer.Default) &&
+							(sourceProperty.NullableAnnotation != NullableAnnotation.Annotated ||
+								sourceProperty.NullableAnnotation == NullableAnnotation.Annotated && _.NullableAnnotation == NullableAnnotation.Annotated));
+
+					if (destinationProperty is not null)
+					{
+						maps.Add($"\t\t\t\t\t{destinationProperty.Name} = self.{sourceProperty.Name},");
+					}
 				}
 			}
 
