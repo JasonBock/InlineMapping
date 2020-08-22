@@ -1,4 +1,5 @@
 ﻿using InlineMapping.Metadata;
+using InlineMapping.Metadata.Descriptors;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System;
@@ -22,9 +23,11 @@ namespace InlineMapping
 
 			if (!destinationType.Constructors.Any(_ => _.DeclaredAccessibility == Accessibility.Public && _.Parameters.Length == 0))
 			{
-				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor("IM0001", "Missing No-Argument Constructor On Destination Type",
-					"The destination type must have a public no-argument constructor.", "Usage", DiagnosticSeverity.Error, true,
-					helpLinkUri: HelpUrlBuilder.Build("IM0001", "Missing No-Argument Constructor On Destination Type")),
+				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
+					NoArgumentConstructorDescriptorConstants.Id, NoArgumentConstructorDescriptorConstants.Title,
+					NoArgumentConstructorDescriptorConstants.Message, DescriptorConstants.Usage, DiagnosticSeverity.Error, true,
+					helpLinkUri: HelpUrlBuilder.Build(
+						NoArgumentConstructorDescriptorConstants.Id, NoArgumentConstructorDescriptorConstants.Title)),
 					attributeData.ApplicationSyntaxReference!.GetSyntax().GetLocation()));
 			}
 
@@ -53,9 +56,11 @@ namespace InlineMapping
 
 			if (maps.Count == 0)
 			{
-				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor("IM0002", "No Property Maps Found",
-					"There were no properties found between the source and destination types to map.", "Usage", DiagnosticSeverity.Error, true, 
-					helpLinkUri: HelpUrlBuilder.Build("IM0002", "No Property Maps Found")),
+				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
+					NoPropertyMapsFoundDescriptorConstants.Id, NoPropertyMapsFoundDescriptorConstants.Title,
+					NoPropertyMapsFoundDescriptorConstants.Message, DescriptorConstants.Usage, DiagnosticSeverity.Error, true,
+					helpLinkUri: HelpUrlBuilder.Build(
+						NoPropertyMapsFoundDescriptorConstants.Id, NoPropertyMapsFoundDescriptorConstants.Title)),
 					attributeData.ApplicationSyntaxReference!.GetSyntax().GetLocation()));
 			}
 
