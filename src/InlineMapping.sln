@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -21,7 +22,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineMapping.Metadata", "I
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineMapping.TestHost", "InlineMapping.TestHost\InlineMapping.TestHost.csproj", "{71D8168A-62F9-476E-BA9E-7437A4034837}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineMapping.PerformanceTests", "InlineMapping.PerformanceTests\InlineMapping.PerformanceTests.csproj", "{DDEC4E80-5D07-4CAE-92A9-56F44D8985D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineMapping.PerformanceTests", "InlineMapping.PerformanceTests\InlineMapping.PerformanceTests.csproj", "{DDEC4E80-5D07-4CAE-92A9-56F44D8985D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
