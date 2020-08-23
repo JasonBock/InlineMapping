@@ -7,7 +7,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>InlineMapping</PackageId>
-    <PackageLicenseUrl>https://github.com/jasonbock/inlinemapping/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/jasonbock/inlinemapping</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageVersion>$(Version)</PackageVersion>
@@ -21,6 +21,7 @@
     <RestoreAdditionalProjectSources>https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json ;$(RestoreAdditionalProjectSources)</RestoreAdditionalProjectSources>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\..\LICENSE" Pack="true" PackagePath=""/>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.7.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.0" PrivateAssets="all" />
   </ItemGroup>
