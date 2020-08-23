@@ -17,16 +17,21 @@ namespace InlineMapping.TestHost
 			var (diagnostics, output) = Program.GetGeneratedOutput(
 @"using InlineMapping.Metadata;
 
-[MapTo(typeof(Destination)]
-public class Source
+namespace BaseNamespace.SubNamespace
 {
-	public int Id { get; set; }
-	public string Name { get; set; }
+	[MapTo(typeof(Destination)]
+	public class Source
+	{
+		public int Id { get; set; }
+	}
 }
 
-public class Destination
+namespace BaseNamespace
 {
-	public int Id { get; set; }
+	public class Destination
+	{
+		public int Id { get; set; }
+	}
 }");
 
 			Console.Out.WriteLine($"diagnostics.Length is {diagnostics.Length}.");

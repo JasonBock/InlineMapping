@@ -94,7 +94,9 @@ namespace InlineMapping
 					"using System;"
 				};
 
-				if (!destinationType.ContainingNamespace.IsGlobalNamespace)
+				if (!destinationType.ContainingNamespace.IsGlobalNamespace && 
+					!sourceType.ContainingNamespace.ToDisplayString().StartsWith(
+						destinationType.ContainingNamespace.ToDisplayString(), StringComparison.InvariantCulture))
 				{
 					usingStatements.Add($"using {destinationType.ContainingNamespace.ToDisplayString()};");
 				}
