@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineMapping.TestHost", "I
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineMapping.PerformanceTests", "InlineMapping.PerformanceTests\InlineMapping.PerformanceTests.csproj", "{DDEC4E80-5D07-4CAE-92A9-56F44D8985D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineMapping.IntegrationTests", "InlineMapping.IntegrationTests\InlineMapping.IntegrationTests.csproj", "{D5990D49-2977-4308-9D29-428FF005A448}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{DDEC4E80-5D07-4CAE-92A9-56F44D8985D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDEC4E80-5D07-4CAE-92A9-56F44D8985D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDEC4E80-5D07-4CAE-92A9-56F44D8985D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5990D49-2977-4308-9D29-428FF005A448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5990D49-2977-4308-9D29-428FF005A448}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5990D49-2977-4308-9D29-428FF005A448}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5990D49-2977-4308-9D29-428FF005A448}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

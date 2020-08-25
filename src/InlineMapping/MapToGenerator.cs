@@ -35,37 +35,34 @@ namespace InlineMapping
 			var maps = new List<string>();
 
 			var destinationProperties = destinationType.GetMembers().OfType<IPropertySymbol>()
-				.Where(_ => _.DeclaredAccessibility == Accessibility.Public && _.SetMethod is not null).ToList();
+				.Where(_ => _.SetMethod is not null && _.SetMethod.DeclaredAccessibility == Accessibility.Public).ToList();
 
-			if(destinationProperties.Count > 0)
+			foreach (var sourceProperty in sourceType.GetMembers().OfType<IPropertySymbol>()
+				.Where(_ => _.GetMethod is not null && _.GetMethod.DeclaredAccessibility == Accessibility.Public))
 			{
-				foreach (var sourceProperty in sourceType.GetMembers().OfType<IPropertySymbol>()
-					.Where(_ => _.DeclaredAccessibility == Accessibility.Public && _.GetMethod is not null))
-				{
-					var destinationProperty = destinationProperties.FirstOrDefault(
-						_ => _.Name == sourceProperty.Name &&
-							_.Type.Equals(sourceProperty.Type, SymbolEqualityComparer.Default) &&
-							(sourceProperty.NullableAnnotation != NullableAnnotation.Annotated ||
-								sourceProperty.NullableAnnotation == NullableAnnotation.Annotated && _.NullableAnnotation == NullableAnnotation.Annotated));
+				var destinationProperty = destinationProperties.FirstOrDefault(
+					_ => _.Name == sourceProperty.Name &&
+						_.Type.Equals(sourceProperty.Type, SymbolEqualityComparer.Default) &&
+						(sourceProperty.NullableAnnotation != NullableAnnotation.Annotated ||
+							sourceProperty.NullableAnnotation == NullableAnnotation.Annotated && _.NullableAnnotation == NullableAnnotation.Annotated));
 
-					if (destinationProperty is not null)
-					{
-						maps.Add($"\t\t\t\t\t{destinationProperty.Name} = self.{sourceProperty.Name},");
-						destinationProperties.Remove(destinationProperty);
-					}
-					else
-					{
-						diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
-							NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title,
-							string.Format(CultureInfo.CurrentCulture, NoMatchDescriptorConstants.Message, sourceProperty.Name, "source", sourceType.Name), 
-							DescriptorConstants.Usage, DiagnosticSeverity.Info, true,
-							helpLinkUri: HelpUrlBuilder.Build(
-								NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title)), null));
-					}
+				if (destinationProperty is not null)
+				{
+					maps.Add($"\t\t\t\t\t{destinationProperty.Name} = self.{sourceProperty.Name},");
+					destinationProperties.Remove(destinationProperty);
+				}
+				else
+				{
+					diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
+						NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title,
+						string.Format(CultureInfo.CurrentCulture, NoMatchDescriptorConstants.Message, sourceProperty.Name, "source", sourceType.Name),
+						DescriptorConstants.Usage, DiagnosticSeverity.Info, true,
+						helpLinkUri: HelpUrlBuilder.Build(
+							NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title)), null));
 				}
 			}
 
-			foreach(var remainingDestinationProperty in destinationProperties)
+			foreach (var remainingDestinationProperty in destinationProperties)
 			{
 				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
 					NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title,
@@ -85,16 +82,16 @@ namespace InlineMapping
 					attributeData.ApplicationSyntaxReference!.GetSyntax().GetLocation()));
 			}
 
-			if(!diagnostics.Any(_ => _.Severity == DiagnosticSeverity.Error))
+			if (!diagnostics.Any(_ => _.Severity == DiagnosticSeverity.Error))
 			{
-				// TODO: If the namespace is the same as one of the usings, or it's "in" one of them, 
-				// we probably don't need to declare the namespace explicitly then.
-				var usingStatements = new SortedSet<string>
+				var usingStatements = new SortedSet<string>();
+
+				if (!sourceType.IsValueType)
 				{
-					"using System;"
+					usingStatements.Add("using System;");
 				};
 
-				if (!destinationType.ContainingNamespace.IsGlobalNamespace && 
+				if (!destinationType.ContainingNamespace.IsGlobalNamespace &&
 					!sourceType.ContainingNamespace.ToDisplayString().StartsWith(
 						destinationType.ContainingNamespace.ToDisplayString(), StringComparison.InvariantCulture))
 				{
@@ -143,7 +140,7 @@ namespace InlineMapping
 						{
 							var (diagnostics, name, text) = MapToGenerator.GenerateMapping(candidateTypeSymbol, mappingAttribute);
 
-							foreach(var diagnostic in diagnostics)
+							foreach (var diagnostic in diagnostics)
 							{
 								context.ReportDiagnostic(diagnostic);
 							}

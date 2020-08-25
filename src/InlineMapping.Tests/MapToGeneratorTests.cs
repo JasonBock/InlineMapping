@@ -1,4 +1,5 @@
 ﻿using InlineMapping.Metadata;
+using InlineMapping.Metadata.Descriptors;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
@@ -11,7 +12,7 @@ namespace InlineMapping.Tests
 	public static class MapToGeneratorTests
 	{
 		[Test]
-		public static void Generate()
+		public static void GenerateWithClasses()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping.Metadata;
@@ -31,8 +32,161 @@ public class Source
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(0));
 				Assert.That(output, Does.Not.Contain("namespace"));
+				Assert.That(output, Does.Contain("using System;"));
 				Assert.That(output, Does.Contain("public static Destination MapToDestination(this Source self) =>"));
 				Assert.That(output, Does.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
+
+		[Test]
+		public static void GenerateWithStructs()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+public struct Destination 
+{ 
+	public string Id { get; set; }
+}
+
+[MapTo(typeof(Destination)]
+public struct Source 
+{ 
+	public string Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(0));
+				Assert.That(output, Does.Not.Contain("namespace"));
+				Assert.That(output, Does.Not.Contain("using System;"));
+				Assert.That(output, Does.Contain("public static Destination MapToDestination(this Source self) =>"));
+				Assert.That(output, Does.Not.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
+
+		[Test]
+		[Ignore("Generators and records don't work right now, need to wait for a resolution.")]
+		public static void GenerateWithRecords() => throw new NotImplementedException();
+
+		[Test]
+		public static void GenerateWhenSourceIsInNamespaceAndDestinationIsNotInNamespace()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+public class Destination 
+{ 
+	public string Id { get; set; }
+}
+
+namespace SourceNamespace
+{
+	[MapTo(typeof(Destination)]
+	public class Source 
+	{ 
+		public string Id { get; set; }
+	}
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(0));
+				Assert.That(output, Does.Contain("namespace SourceNamespace"));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
+
+		[Test]
+		public static void GenerateWhenSourceIsNotInNamespaceAndDestinationIsInNamespace()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+namespace DestinationNamespace
+{
+	public class Destination 
+	{ 
+		public string Id { get; set; }
+	}
+}
+
+[MapTo(typeof(DestinationNamespace.Destination)]
+public class Source 
+{ 
+	public string Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(0));
+				Assert.That(output, Does.Contain("using DestinationNamespace;"));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
+
+		[Test]
+		public static void GenerateWhenDestinationIsInSourceNamespace()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+namespace BaseNamespace
+{
+	public class Destination 
+	{ 
+		public string Id { get; set; }
+	}
+}
+
+namespace BaseNamespace.SubNamespace
+{
+	[MapTo(typeof(Destination)]
+	public class Source 
+	{ 
+		public string Id { get; set; }
+	}
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(0));
+				Assert.That(output, Does.Not.Contain("using BaseNamespace;"));
+				Assert.That(output, Does.Contain("namespace BaseNamespace.SubNamespace"));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
+
+		[Test]
+		public static void GenerateWhenDestinationIsNotInSourceNamespace()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+namespace DestinationNamespace
+{
+	public class Destination 
+	{ 
+		public string Id { get; set; }
+	}
+}
+
+namespace SourceNamespace
+{
+	[MapTo(typeof(DestinationNamespace.Destination)]
+	public class Source 
+	{ 
+		public string Id { get; set; }
+	}
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(0));
+				Assert.That(output, Does.Contain("using DestinationNamespace;"));
+				Assert.That(output, Does.Contain("namespace SourceNamespace"));
 				Assert.That(output, Does.Contain("Id = self.Id,"));
 			});
 		}
@@ -51,7 +205,35 @@ public class Source { }");
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(diagnostics[0].Id, Is.EqualTo("IM0002"));
+				Assert.That(diagnostics[0].Id, Is.EqualTo(NoPropertyMapsFoundDescriptorConstants.Id));
+				Assert.That(output, Is.EqualTo(string.Empty));
+			});
+		}
+
+		[Test]
+		public static void GenerateWhenSourcePropertyIsNotPublic()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+public class Destination 
+{ 
+	public string Id { get; set; }
+}
+
+[MapTo(typeof(Destination)]
+public class Source 
+{ 
+	private string Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(2));
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDescriptorConstants.Id), Throws.Nothing);
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				Assert.That(noMatchMessage, Contains.Substring("Id"));
+				Assert.That(noMatchMessage, Contains.Substring("destination type Destination"));
 				Assert.That(output, Is.EqualTo(string.Empty));
 			});
 		}
@@ -64,7 +246,93 @@ public class Source { }");
 
 public class Destination 
 { 
-	internal string Id { get; set; }
+	private string Id { get; set; }
+}
+
+[MapTo(typeof(Destination)]
+public class Source 
+{ 
+	public string Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(2));
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDescriptorConstants.Id), Throws.Nothing);
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				Assert.That(noMatchMessage, Contains.Substring("Id"));
+				Assert.That(noMatchMessage, Contains.Substring("source type Source"));
+				Assert.That(output, Is.EqualTo(string.Empty));
+			});
+		}
+
+		[Test]
+		public static void GenerateWhenSourceGetterIsNotPublic()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+public class Destination 
+{ 
+	public string Id { get; set; }
+}
+
+[MapTo(typeof(Destination)]
+public class Source 
+{ 
+	public string Id { private get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(2));
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDescriptorConstants.Id), Throws.Nothing);
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				Assert.That(noMatchMessage, Contains.Substring("Id"));
+				Assert.That(noMatchMessage, Contains.Substring("destination type Destination"));
+				Assert.That(output, Is.EqualTo(string.Empty));
+			});
+		}
+
+		[Test]
+		public static void GenerateWhenDestinationSetterIsNotPublic()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+public class Destination 
+{ 
+	public string Id { get; private set; }
+}
+
+[MapTo(typeof(Destination)]
+public class Source 
+{ 
+	public string Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(2));
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDescriptorConstants.Id), Throws.Nothing);
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				Assert.That(noMatchMessage, Contains.Substring("Id"));
+				Assert.That(noMatchMessage, Contains.Substring("source type Source"));
+				Assert.That(output, Is.EqualTo(string.Empty));
+			});
+		}
+
+		[Test]
+		public static void GenerateWhenDestinationHasNonPublicNoArgumentConstructor()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+public class Destination 
+{
+	private Destination() { }
+
+	public string Id { get; set; }
 }
 
 [MapTo(typeof(Destination)]
@@ -76,7 +344,127 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(diagnostics[0].Id, Is.EqualTo("IM0002"));
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoArgumentConstructorDescriptorConstants.Id), Throws.Nothing);
+				Assert.That(output, Is.EqualTo(string.Empty));
+			});
+		}
+
+		[Test]
+		public static void GenerateWhenDestinationHasPublicMultipleArgumentConstructor()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+public class Destination 
+{
+	public Destination(int id) { }
+
+	public string Id { get; set; }
+}
+
+[MapTo(typeof(Destination)]
+public class Source 
+{ 
+	public string Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(1));
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoArgumentConstructorDescriptorConstants.Id), Throws.Nothing);
+				Assert.That(output, Is.EqualTo(string.Empty));
+			});
+		}
+
+		[Test]
+		public static void GenerateWhenSourceDoesNotMapAllProperties()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+public class Destination 
+{ 
+	public string Id { get; set; }
+}
+
+[MapTo(typeof(Destination)]
+public class Source 
+{ 
+	public string Id { get; set; }
+	public string Name { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(1));
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				Assert.That(noMatchMessage, Contains.Substring("Name"));
+				Assert.That(noMatchMessage, Contains.Substring("source type Source"));
+				Assert.That(output, Does.Not.Contain("namespace"));
+				Assert.That(output, Does.Contain("using System;"));
+				Assert.That(output, Does.Contain("public static Destination MapToDestination(this Source self) =>"));
+				Assert.That(output, Does.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
+
+		[Test]
+		public static void GenerateWhenDestinationDoesNotMapAllProperties()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+public class Destination 
+{ 
+	public string Id { get; set; }
+	public string Name { get; set; }
+}
+
+[MapTo(typeof(Destination)]
+public class Source 
+{ 
+	public string Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(1));
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				Assert.That(noMatchMessage, Contains.Substring("Name"));
+				Assert.That(noMatchMessage, Contains.Substring("destination type Destination"));
+				Assert.That(output, Does.Not.Contain("namespace"));
+				Assert.That(output, Does.Contain("using System;"));
+				Assert.That(output, Does.Contain("public static Destination MapToDestination(this Source self) =>"));
+				Assert.That(output, Does.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
+
+		[Test]
+		public static void GenerateWhenPropertyTypesDoNotMatch()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping.Metadata;
+
+public class Destination 
+{ 
+	public string Id { get; set; }
+}
+
+[MapTo(typeof(Destination)]
+public class Source 
+{ 
+	public int Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(3));
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDescriptorConstants.Id), Throws.Nothing);
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id && 
+					_.GetMessage().Contains("source type Source", StringComparison.InvariantCulture)), Throws.Nothing);
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id &&
+					_.GetMessage().Contains("destination type Destination", StringComparison.InvariantCulture)), Throws.Nothing);
 				Assert.That(output, Is.EqualTo(string.Empty));
 			});
 		}

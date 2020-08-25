@@ -1,0 +1,32 @@
+﻿using InlineMapping.Metadata;
+using NUnit.Framework;
+
+namespace InlineMapping.IntegrationTests
+{
+	public static class MapTests
+	{
+		[Test]
+		[Ignore("Test Explorer doesn't work in VS 2019 Preview ATM, and \"dotnet test\" doesn't run the generators.")]
+		public static void Map()
+		{
+			//var source = new Source { Id = 3 };
+			//var destination = source.MapToDestination();
+
+			//Assert.Multiple(() =>
+			//{
+			//	Assert.That(destination.Id, Is.EqualTo(3));
+			//});
+		}
+	}
+
+	[MapTo(typeof(Destination))]
+	public class Source
+	{
+		public int Id { get; set; }
+	}
+
+	public class Destination
+	{
+		public int Id { get; set; }
+	}
+}
