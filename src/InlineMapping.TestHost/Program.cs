@@ -14,23 +14,17 @@ namespace InlineMapping.TestHost
 		{
 			// TODO: Do this with records and init
 			var (diagnostics, output) = Program.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
-namespace BaseNamespace.SubNamespace
+[MapTo(typeof(Destination))]
+public record Source
 {
-	[MapTo(typeof(Destination)]
-	public class Source
-	{
-		public int Id { get; set; }
-	}
+	public int Id { get; init; }
 }
 
-namespace BaseNamespace
+public record Destination
 {
-	public class Destination
-	{
-		public int Id { get; set; }
-	}
+	public int Id { get; init; }
 }");
 
 			Console.Out.WriteLine($"diagnostics.Length is {diagnostics.Length}.");

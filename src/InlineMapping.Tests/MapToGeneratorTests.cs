@@ -21,7 +21,7 @@ public class Destination
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -49,7 +49,7 @@ public struct Destination
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public struct Source 
 { 
 	public string Id { get; set; }
@@ -67,8 +67,33 @@ public struct Source
 		}
 
 		[Test]
-		[Ignore("Generators and records don't work right now, need to wait for a resolution.")]
-		public static void GenerateWithRecords() => throw new NotImplementedException();
+		[Ignore("Records have issues with generators.")]
+		public static void GenerateWithRecords()
+		{
+			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+@"using InlineMapping;
+
+public record Destination 
+{ 
+	public string Id { get; init; }
+}
+
+[MapTo(typeof(Destination))]
+public record Source 
+{ 
+	public string Id { get; init; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(0));
+				Assert.That(output, Does.Not.Contain("namespace"));
+				Assert.That(output, Does.Contain("using System;"));
+				Assert.That(output, Does.Contain("public static Destination MapToDestination(this Source self) =>"));
+				Assert.That(output, Does.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
 
 		[Test]
 		public static void GenerateWhenSourceIsInNamespaceAndDestinationIsNotInNamespace()
@@ -83,7 +108,7 @@ public class Destination
 
 namespace SourceNamespace
 {
-	[MapTo(typeof(Destination)]
+	[MapTo(typeof(Destination))]
 	public class Source 
 	{ 
 		public string Id { get; set; }
@@ -142,7 +167,7 @@ namespace BaseNamespace
 
 namespace BaseNamespace.SubNamespace
 {
-	[MapTo(typeof(Destination)]
+	[MapTo(typeof(Destination))]
 	public class Source 
 	{ 
 		public string Id { get; set; }
@@ -198,7 +223,7 @@ namespace SourceNamespace
 
 public class Destination { }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source { }");
 
 			Assert.Multiple(() =>
@@ -220,7 +245,7 @@ public class Destination
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source 
 { 
 	private string Id { get; set; }
@@ -248,7 +273,7 @@ public class Destination
 	private string Id { get; set; }
 }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -276,7 +301,7 @@ public class Destination
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { private get; set; }
@@ -304,7 +329,7 @@ public class Destination
 	public string Id { get; private set; }
 }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -334,7 +359,7 @@ public class Destination
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -361,7 +386,7 @@ public class Destination
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -386,7 +411,7 @@ public class Destination
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -419,7 +444,7 @@ public class Destination
 	public string Name { get; set; }
 }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -450,7 +475,7 @@ public class Destination
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public int Id { get; set; }
