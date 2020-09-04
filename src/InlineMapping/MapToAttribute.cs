@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InlineMapping.Metadata
+namespace InlineMapping
 {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 	public sealed class MapToAttribute

@@ -1,5 +1,4 @@
-﻿using InlineMapping.Metadata;
-using InlineMapping.Metadata.Descriptors;
+﻿using InlineMapping.Descriptors;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
@@ -15,7 +14,7 @@ namespace InlineMapping.Tests
 		public static void GenerateWithClasses()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination 
 { 
@@ -43,7 +42,7 @@ public class Source
 		public static void GenerateWithStructs()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public struct Destination 
 { 
@@ -75,7 +74,7 @@ public struct Source
 		public static void GenerateWhenSourceIsInNamespaceAndDestinationIsNotInNamespace()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination 
 { 
@@ -103,7 +102,7 @@ namespace SourceNamespace
 		public static void GenerateWhenSourceIsNotInNamespaceAndDestinationIsInNamespace()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 namespace DestinationNamespace
 {
@@ -131,7 +130,7 @@ public class Source
 		public static void GenerateWhenDestinationIsInSourceNamespace()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 namespace BaseNamespace
 {
@@ -163,7 +162,7 @@ namespace BaseNamespace.SubNamespace
 		public static void GenerateWhenDestinationIsNotInSourceNamespace()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 namespace DestinationNamespace
 {
@@ -195,7 +194,7 @@ namespace SourceNamespace
 		public static void GenerateWhenNoPropertiesExist()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination { }
 
@@ -214,7 +213,7 @@ public class Source { }");
 		public static void GenerateWhenSourcePropertyIsNotPublic()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination 
 { 
@@ -242,7 +241,7 @@ public class Source
 		public static void GenerateWhenDestinationPropertyIsNotPublic()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination 
 { 
@@ -270,7 +269,7 @@ public class Source
 		public static void GenerateWhenSourceGetterIsNotPublic()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination 
 { 
@@ -298,7 +297,7 @@ public class Source
 		public static void GenerateWhenDestinationSetterIsNotPublic()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination 
 { 
@@ -326,7 +325,7 @@ public class Source
 		public static void GenerateWhenDestinationHasNonPublicNoArgumentConstructor()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination 
 {
@@ -353,7 +352,7 @@ public class Source
 		public static void GenerateWhenDestinationHasPublicMultipleArgumentConstructor()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination 
 {
@@ -380,7 +379,7 @@ public class Source
 		public static void GenerateWhenSourceDoesNotMapAllProperties()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination 
 { 
@@ -412,7 +411,7 @@ public class Source
 		public static void GenerateWhenDestinationDoesNotMapAllProperties()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination 
 { 
@@ -444,7 +443,7 @@ public class Source
 		public static void GenerateWhenPropertyTypesDoNotMatch()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
-@"using InlineMapping.Metadata;
+@"using InlineMapping;
 
 public class Destination 
 { 

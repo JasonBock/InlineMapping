@@ -1,4 +1,4 @@
-﻿namespace InlineMapping.Metadata.Descriptors
+﻿namespace InlineMapping.Descriptors
 {
 	public static class DescriptorConstants
 	{

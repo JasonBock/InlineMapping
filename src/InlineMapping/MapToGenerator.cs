@@ -1,5 +1,4 @@
-﻿using InlineMapping.Metadata;
-using InlineMapping.Metadata.Descriptors;
+﻿using InlineMapping.Descriptors;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System;

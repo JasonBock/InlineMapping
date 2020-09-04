@@ -1,5 +1,4 @@
-﻿using InlineMapping.Metadata;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace InlineMapping.IntegrationTests
 {

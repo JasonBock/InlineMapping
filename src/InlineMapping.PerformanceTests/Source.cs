@@ -1,5 +1,4 @@
-﻿using InlineMapping.Metadata;
-using System;
+﻿using System;
 
 namespace InlineMapping.PerformanceTests
 {
