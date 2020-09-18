@@ -8,7 +8,7 @@ namespace InlineMapping.IntegrationTests
 		public static void Map()
 		{
 			var source = new Source { Id = 3 };
-			var destination = source.MapToDestination();
+			var destination = new Destination(); // source.MapToDestination();
 
 			Assert.Multiple(() =>
 			{

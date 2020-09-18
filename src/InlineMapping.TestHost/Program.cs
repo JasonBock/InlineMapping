@@ -48,9 +48,8 @@ public record Destination
 				references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 			var generator = new MapToGenerator();
 
-			var driver = new CSharpGeneratorDriver(compilation.SyntaxTrees[0].Options,
-				ImmutableArray.Create<ISourceGenerator>(generator), default!, ImmutableArray<AdditionalText>.Empty);
-			driver.RunFullGeneration(compilation, out var outputCompilation, out var diagnostics);
+			var driver = CSharpGeneratorDriver.Create(ImmutableArray.Create<ISourceGenerator>(generator));
+			driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var diagnostics);
 
 			return (diagnostics, outputCompilation.SyntaxTrees.Last().ToString());
 		}

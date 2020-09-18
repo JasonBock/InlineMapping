@@ -67,7 +67,6 @@ public struct Source
 		}
 
 		[Test]
-		[Ignore("Records have issues with generators.")]
 		public static void GenerateWithRecords()
 		{
 			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
@@ -504,9 +503,8 @@ public class Source
 				references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 			var generator = new MapToGenerator();
 
-			var driver = new CSharpGeneratorDriver(compilation.SyntaxTrees[0].Options,
-				ImmutableArray.Create<ISourceGenerator>(generator), default!, ImmutableArray<AdditionalText>.Empty);
-			driver.RunFullGeneration(compilation, out var outputCompilation, out var diagnostics);
+			var driver = CSharpGeneratorDriver.Create(ImmutableArray.Create<ISourceGenerator>(generator));
+			driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var diagnostics);
 
 			var trees = outputCompilation.SyntaxTrees.ToList();
 

@@ -22,7 +22,9 @@ namespace InlineMapping.PerformanceTests
 			new MapperConfiguration(_ => _.CreateMap<Source, Destination>()).CreateMapper();
 
 		[Benchmark(Baseline = true)]
-		public Destination MapUsingInline() => this.source.MapToDestination();
+#pragma warning disable CA1822 // Mark members as static
+		public Destination MapUsingInline() => new Destination(); // this.source.MapToDestination();
+#pragma warning restore CA1822 // Mark members as static
 
 		[Benchmark]
 		public Destination MapUsingReflection()

@@ -120,7 +120,7 @@ namespace InlineMapping
 			return (diagnostics.ToImmutableList(), null, null);
 		}
 
-		public void Execute(SourceGeneratorContext context)
+		public void Execute(GeneratorExecutionContext context)
 		{
 			if (context.SyntaxReceiver is MapToReceiver receiver)
 			{
@@ -154,6 +154,7 @@ namespace InlineMapping
 			}
 		}
 
-		public void Initialize(InitializationContext context) => context.RegisterForSyntaxNotifications(() => new MapToReceiver());
+		public void Initialize(GeneratorInitializationContext context) => 
+			context.RegisterForSyntaxNotifications(() => new MapToReceiver());
 	}
 }
