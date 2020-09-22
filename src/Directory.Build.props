@@ -2,9 +2,9 @@
   <PropertyGroup>
     <Authors>Jason Bock</Authors>
     <Copyright>Copyright © 2020</Copyright>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Version>1.0.0-rc2</Version>
   </PropertyGroup>
   <ItemGroup>

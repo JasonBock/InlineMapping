@@ -1,24 +1,16 @@
-﻿using System;
+﻿using InlineMapping.Host;
+using System;
 
-namespace InlineMapping.Host
+var source = new Source
 {
-	public static class Program
-	{
-		public static void Main() 
-		{
-			var source = new Source
-			{
-				Id = Guid.NewGuid(),
-				Name = "Joe",
-				When = DateTime.Now,
-			};
+	Id = Guid.NewGuid(),
+	Name = "Joe",
+	When = DateTime.Now,
+};
 
-			var destination = source.MapToDestination();
+var destination = source.MapToDestination();
 
-			Console.Out.WriteLine($"Id: {source.Id} - {destination.Id}");
-			Console.Out.WriteLine($"Name: {source.Name} - {destination.Name}");
-			Console.Out.WriteLine($"source.When: {source.When}");
-			Console.Out.WriteLine($"destination.Age: {destination.Age}");
-		}
-	}
-}
+Console.Out.WriteLine($"Id: {source.Id} - {destination.Id}");
+Console.Out.WriteLine($"Name: {source.Name} - {destination.Name}");
+Console.Out.WriteLine($"source.When: {source.When}");
+Console.Out.WriteLine($"destination.Age: {destination.Age}");

@@ -1,4 +1,5 @@
 ﻿using InlineMapping.Descriptors;
+using InlineMapping.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace InlineMapping
@@ -122,11 +124,11 @@ namespace InlineMapping
 
 		public void Execute(GeneratorExecutionContext context)
 		{
+			var (mapToAttributeSymbol, compilation) = Assembly.GetExecutingAssembly().LoadSymbol(
+				"InlineMapping.MapToAttribute.cs", "InlineMapping.MapToAttribute", context);
+
 			if (context.SyntaxReceiver is MapToReceiver receiver)
 			{
-				var compilation = context.Compilation;
-				var mapToSymbol = compilation.GetTypeByMetadataName(typeof(MapToAttribute).FullName);
-
 				foreach (var candidateTypeNode in receiver.Candidates)
 				{
 					var model = compilation.GetSemanticModel(candidateTypeNode.SyntaxTree);
@@ -135,7 +137,7 @@ namespace InlineMapping
 					if (candidateTypeSymbol is not null)
 					{
 						foreach (var mappingAttribute in candidateTypeSymbol.GetAttributes().Where(
-							_ => _.AttributeClass!.Equals(mapToSymbol, SymbolEqualityComparer.Default)))
+							_ => _.AttributeClass!.Equals(mapToAttributeSymbol, SymbolEqualityComparer.Default)))
 						{
 							var (diagnostics, name, text) = MapToGenerator.GenerateMapping(candidateTypeSymbol, mappingAttribute);
 

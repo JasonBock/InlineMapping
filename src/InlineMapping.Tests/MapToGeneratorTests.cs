@@ -498,7 +498,7 @@ public class Source
 			var references = AppDomain.CurrentDomain.GetAssemblies()
 				.Where(_ => !_.IsDynamic && !string.IsNullOrWhiteSpace(_.Location))
 				.Select(_ => MetadataReference.CreateFromFile(_.Location))
-				.Concat(new[] { MetadataReference.CreateFromFile(typeof(MapToAttribute).Assembly.Location) });
+				.Concat(new[] { MetadataReference.CreateFromFile(typeof(MapToGenerator).Assembly.Location) });
 			var compilation = CSharpCompilation.Create("generator", new SyntaxTree[] { syntaxTree },
 				references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 			var generator = new MapToGenerator();
