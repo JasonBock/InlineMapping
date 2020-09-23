@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <!-- Have to set this to false because of https://github.com/dotnet/roslyn-analyzers/issues/4068 -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="InlineMapping" Version="1.0.0-rc4" />
+  </ItemGroup>
+</Project>
