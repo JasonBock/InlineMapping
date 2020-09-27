@@ -4,16 +4,16 @@ This is a work in progress - I'll add more information as I make more headway.
 
 ## Getting the Code
 
-Right now, you can either clone the repository, or get it from NuGet...once I actually [make the package](https://github.com/JasonBock/InlineMapping/issues/8). Referencing it is a little tricky. If you reference the project directly, add this to your .csproj file:
+Right now, you can either clone the repository, or [get it from NuGet](https://www.nuget.org/packages/InlineMapping/). Referencing it is a little tricky. If you reference the project directly, add this to your .csproj file:
 ```
 <ProjectReference Include="..\InlineMapping.Metadata\InlineMapping.Metadata.csproj" />
 <ProjectReference Include="..\InlineMapping\InlineMapping.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 ```
-Hopefully by the time the source generator feature ships, the details around shipping and referencing generators will be clear.
+Also, make sure `LangVersion` is set to `preview` in the project that's referencing InlineMapping. Hopefully by the time the source generator feature ships, the details around shipping and referencing generators will be clear.
 ## How It Works
 Once you reference InlineMapping from your project, add the `MapToAttribute` to your source type, specifying what destination types you want to be able to map to:
 ```
-MapTo[typeof(Destination)]
+[MapTo(typeof(Destination))]
 public class Source
 {
 	public int Id { get; set; }
