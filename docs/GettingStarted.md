@@ -6,8 +6,7 @@ This is a work in progress - I'll add more information as I make more headway.
 
 Right now, you can either clone the repository, or [get it from NuGet](https://www.nuget.org/packages/InlineMapping/). Referencing it is a little tricky. If you reference the project directly, add this to your .csproj file:
 ```
-<ProjectReference Include="..\InlineMapping.Metadata\InlineMapping.Metadata.csproj" />
-<ProjectReference Include="..\InlineMapping\InlineMapping.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+<ProjectReference Include="..\InlineMapping\InlineMapping.csproj" OutputItemType="Analyzer" />
 ```
 Also, make sure `LangVersion` is set to `preview` in the project that's referencing InlineMapping. Hopefully by the time the source generator feature ships, the details around shipping and referencing generators will be clear.
 ## How It Works
