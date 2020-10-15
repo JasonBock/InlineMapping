@@ -8,11 +8,11 @@ namespace InlineMapping.IntegrationTests
 		public static void Map()
 		{
 			var source = new Source { Id = 3 };
-			var destination = new Destination(); // source.MapToDestination();
+			var destination = source.MapToDestination();
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(destination.Id, Is.EqualTo(3));
+				Assert.That(destination.Id, Is.EqualTo(source.Id));
 			});
 		}
 	}

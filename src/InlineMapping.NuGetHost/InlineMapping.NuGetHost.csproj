@@ -6,6 +6,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="InlineMapping" Version="1.0.0-rc4" />
+    <PackageReference Include="InlineMapping" Version="1.0.0-rc5" />
   </ItemGroup>
 </Project>

@@ -501,6 +501,8 @@ public class Source
 				.Concat(new[] { MetadataReference.CreateFromFile(typeof(MapToGenerator).Assembly.Location) });
 			var compilation = CSharpCompilation.Create("generator", new SyntaxTree[] { syntaxTree },
 				references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+			var originalTreeCount = compilation.SyntaxTrees.Length;
 			var generator = new MapToGenerator();
 
 			var driver = CSharpGeneratorDriver.Create(ImmutableArray.Create<ISourceGenerator>(generator));
@@ -508,7 +510,7 @@ public class Source
 
 			var trees = outputCompilation.SyntaxTrees.ToList();
 
-			return (diagnostics, trees.Count == 2 ? trees[^1].ToString() : string.Empty);
+			return (diagnostics, trees.Count == originalTreeCount + 2 ? trees[^1].ToString() : string.Empty);
 		}
 	}
 }

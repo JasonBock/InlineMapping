@@ -37,5 +37,7 @@ dotnet_diagnostic.CA1030.severity = none
 # CA1303: Do not pass literals as localized parameters
 dotnet_diagnostic.CA1303.severity = none
 
+dotnet_diagnostics.NU1603.severity = none
+
 [*.xml]
 indent_style = tab
