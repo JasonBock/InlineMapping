@@ -1,5 +1,4 @@
 ﻿using InlineMapping.Descriptors;
-using InlineMapping.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System;
@@ -7,13 +6,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace InlineMapping
 {
 	[Generator]
-	public sealed class MapToGenerator
+#pragma warning disable CA1812
+	internal sealed class MapToGenerator
+#pragma warning restore CA1812
 		: ISourceGenerator
 	{
 		private static (ImmutableList<Diagnostic> diagnostics, string? name, SourceText? text) GenerateMapping(
@@ -124,11 +124,14 @@ namespace InlineMapping
 
 		public void Execute(GeneratorExecutionContext context)
 		{
-			var (mapToAttributeSymbol, compilation) = Assembly.GetExecutingAssembly().LoadSymbol(
-				"InlineMapping.MapToAttribute.cs", "InlineMapping.MapToAttribute", context);
+			//var (mapToAttributeSymbol, compilation) = Assembly.GetExecutingAssembly().LoadSymbol(
+			//	"InlineMapping.MapToAttribute.cs", "InlineMapping.MapToAttribute", context);
 
 			if (context.SyntaxReceiver is MapToReceiver receiver)
 			{
+				var compilation = context.Compilation;
+				var mapToAttributeSymbol = compilation.GetTypeByMetadataName(typeof(MapToAttribute).FullName);
+				
 				foreach (var candidateTypeNode in receiver.Candidates)
 				{
 					var model = compilation.GetSemanticModel(candidateTypeNode.SyntaxTree);

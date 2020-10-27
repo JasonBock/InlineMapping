@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
 		..\LICENSE = ..\LICENSE
 		nuget.config = nuget.config
 		README.md = README.md
@@ -19,13 +20,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineMapping.Tests", "Inli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineMapping.Host", "InlineMapping.Host\InlineMapping.Host.csproj", "{1CECBDE7-80B6-40AB-8FBE-DAB86DA28E2E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineMapping.TestHost", "InlineMapping.TestHost\InlineMapping.TestHost.csproj", "{71D8168A-62F9-476E-BA9E-7437A4034837}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineMapping.PerformanceTests", "InlineMapping.PerformanceTests\InlineMapping.PerformanceTests.csproj", "{DDEC4E80-5D07-4CAE-92A9-56F44D8985D6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineMapping.IntegrationTests", "InlineMapping.IntegrationTests\InlineMapping.IntegrationTests.csproj", "{D5990D49-2977-4308-9D29-428FF005A448}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineMapping.NuGetHost", "InlineMapping.NuGetHost\InlineMapping.NuGetHost.csproj", "{D6B73B93-F7A1-4E43-AE7F-DB4F845AA4A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineMapping.NuGetHost", "InlineMapping.NuGetHost\InlineMapping.NuGetHost.csproj", "{D6B73B93-F7A1-4E43-AE7F-DB4F845AA4A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +44,6 @@ Global
 		{1CECBDE7-80B6-40AB-8FBE-DAB86DA28E2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1CECBDE7-80B6-40AB-8FBE-DAB86DA28E2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1CECBDE7-80B6-40AB-8FBE-DAB86DA28E2E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{71D8168A-62F9-476E-BA9E-7437A4034837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71D8168A-62F9-476E-BA9E-7437A4034837}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{71D8168A-62F9-476E-BA9E-7437A4034837}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71D8168A-62F9-476E-BA9E-7437A4034837}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DDEC4E80-5D07-4CAE-92A9-56F44D8985D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DDEC4E80-5D07-4CAE-92A9-56F44D8985D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDEC4E80-5D07-4CAE-92A9-56F44D8985D6}.Release|Any CPU.ActiveCfg = Release|Any CPU

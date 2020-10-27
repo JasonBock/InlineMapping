@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>InlineMapping</AssemblyName>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <Description>Generates mapping code between two types.</Description>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeSymbols>true</IncludeSymbols>
     <NoWarn>NU5128</NoWarn>
     <PackageId>InlineMapping</PackageId>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -13,6 +15,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryUrl>https://github.com/jasonbock/inlinemapping</RepositoryUrl>
     <RootNamespace>InlineMapping</RootNamespace>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
@@ -20,13 +23,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0-4.final" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="MapToAttribute.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="MapToAttribute.cs" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0-5.final" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE" Pack="true" PackagePath="" />

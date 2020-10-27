@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace InlineMapping
 {
-	public sealed class MapToReceiver
+	internal sealed class MapToReceiver
 		: ISyntaxReceiver
 	{
 		public List<TypeDeclarationSyntax> Candidates { get; } = new List<TypeDeclarationSyntax>();

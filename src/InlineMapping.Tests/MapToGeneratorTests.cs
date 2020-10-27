@@ -510,7 +510,7 @@ public class Source
 
 			var trees = outputCompilation.SyntaxTrees.ToList();
 
-			return (diagnostics, trees.Count == originalTreeCount + 2 ? trees[^1].ToString() : string.Empty);
+			return (diagnostics, trees.Count != originalTreeCount ? trees[^1].ToString() : string.Empty);
 		}
 	}
 }
