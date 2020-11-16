@@ -4,7 +4,7 @@ using System;
 var source = new Source
 {
 	Id = Guid.NewGuid(),
-	Name = "Joe",
+	Name = "Jeff",
 	When = DateTime.Now,
 };
 
