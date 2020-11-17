@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.Text;
+﻿using InlineMapping.Configuration;
+using Microsoft.CodeAnalysis.Text;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -9,14 +10,14 @@ namespace InlineMapping
 {
 	internal sealed class MappingBuilder
 	{
-		public MappingBuilder(MappingInformation information) => 
-			this.Text = MappingBuilder.Build(information);
+		public MappingBuilder(MappingInformation information, ConfigurationValues configurationValues) => 
+			this.Text = MappingBuilder.Build(information, configurationValues);
 
-		private static SourceText Build(MappingInformation information)
+		private static SourceText Build(MappingInformation information, ConfigurationValues configurationValues)
 		{
 			using var writer = new StringWriter();
-			// TODO: Can we read .editorconfig to figure out the space/tab + indention
-			using var indentWriter = new IndentedTextWriter(writer, "	");
+			using var indentWriter = new IndentedTextWriter(writer, 
+				configurationValues.IndentStyle == IndentStyle.Tab ? "\t" : new string(' ', (int)configurationValues.IndentSize));
 
 			var usingStatements = new SortedSet<string>();
 

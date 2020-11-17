@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using InlineMapping.Configuration;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using System.Linq;
@@ -10,17 +11,17 @@ namespace InlineMapping
 		: ISourceGenerator
 	{
 		private static (ImmutableArray<Diagnostic> diagnostics, string? name, SourceText? text) GenerateMapping(
-			ITypeSymbol sourceType, AttributeData attributeData)
+			ITypeSymbol sourceType, AttributeData attributeData, ConfigurationValues configurationValues)
 		{
 			var information = new MappingInformation(sourceType, attributeData);
 
 			if (!information.Diagnostics.Any(_ => _.Severity == DiagnosticSeverity.Error))
 			{
-				var text = new MappingBuilder(information).Text;
+				var text = new MappingBuilder(information, configurationValues).Text;
 				return (information.Diagnostics, $"{sourceType.Name}_To_{information.DestinationType.Name}_Map.g.cs", text);
 			}
 
-			return (ImmutableArray<Diagnostic>.Empty, null, null);
+			return (information.Diagnostics, null, null);
 		}
 
 		public void Execute(GeneratorExecutionContext context)
@@ -40,7 +41,9 @@ namespace InlineMapping
 						foreach (var mappingAttribute in candidateTypeSymbol.GetAttributes().Where(
 							_ => _.AttributeClass!.Equals(mapToAttributeSymbol, SymbolEqualityComparer.Default)))
 						{
-							var (diagnostics, name, text) = MapToGenerator.GenerateMapping(candidateTypeSymbol, mappingAttribute);
+							var configurationValues = new ConfigurationValues(context, candidateTypeNode.SyntaxTree);
+							var (diagnostics, name, text) = MapToGenerator.GenerateMapping(
+								candidateTypeSymbol, mappingAttribute, configurationValues);
 
 							foreach (var diagnostic in diagnostics)
 							{
