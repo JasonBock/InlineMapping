@@ -9,7 +9,7 @@ namespace InlineMapping.PerformanceTests
 	[MemoryDiagnoser]
 	public class MappingTests
 	{
-		private readonly Source source = new Source
+		private readonly Source source = new()
 		{
 			Age = 22,
 			Buffer = Guid.NewGuid().ToByteArray(),
@@ -23,13 +23,13 @@ namespace InlineMapping.PerformanceTests
 
 		[Benchmark(Baseline = true)]
 #pragma warning disable CA1822 // Mark members as static
-		public Destination MapUsingInline() => new Destination(); // this.source.MapToDestination();
+		public Destination MapUsingInline() => new(); // this.source.MapToDestination();
 #pragma warning restore CA1822 // Mark members as static
 
 		[Benchmark]
 		public Destination MapUsingReflection()
 		{
-			var destination = new Destination();
+			Destination destination = new();
 			var destinationProperties = typeof(Destination).GetProperties(BindingFlags.Instance | BindingFlags.Public)
 				.Where(_ => _.CanWrite);
 

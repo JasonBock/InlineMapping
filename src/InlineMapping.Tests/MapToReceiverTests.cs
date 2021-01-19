@@ -15,7 +15,7 @@ namespace InlineMapping.Tests
 @"[MapTo]
 public class Source { }").GetRootAsync().ConfigureAwait(false)).DescendantNodes(_ => true).OfType<ClassDeclarationSyntax>().First();
 
-			var receiver = new MapToReceiver();
+			MapToReceiver receiver = new();
 			receiver.OnVisitSyntaxNode(classDeclaration);
 
 			Assert.Multiple(() =>
@@ -32,7 +32,7 @@ public class Source { }").GetRootAsync().ConfigureAwait(false)).DescendantNodes(
 @"[MapToAttribute]
 public class Source { }").GetRootAsync().ConfigureAwait(false)).DescendantNodes(_ => true).OfType<ClassDeclarationSyntax>().First();
 
-			var receiver = new MapToReceiver();
+			MapToReceiver receiver = new();
 			receiver.OnVisitSyntaxNode(classDeclaration);
 
 			Assert.Multiple(() =>
@@ -49,7 +49,7 @@ public class Source { }").GetRootAsync().ConfigureAwait(false)).DescendantNodes(
 @"[Dummy]
 public class Source { }").GetRootAsync().ConfigureAwait(false)).DescendantNodes(_ => true).OfType<ClassDeclarationSyntax>().First();
 
-			var receiver = new MapToReceiver();
+			MapToReceiver receiver = new();
 			receiver.OnVisitSyntaxNode(classDeclaration);
 
 			Assert.Multiple(() =>
@@ -64,7 +64,7 @@ public class Source { }").GetRootAsync().ConfigureAwait(false)).DescendantNodes(
 			var classDeclaration = (await SyntaxFactory.ParseSyntaxTree(
 "public class Source { }").GetRootAsync().ConfigureAwait(false)).DescendantNodes(_ => true).OfType<ClassDeclarationSyntax>().First();
 
-			var receiver = new MapToReceiver();
+			MapToReceiver receiver = new();
 			receiver.OnVisitSyntaxNode(classDeclaration);
 
 			Assert.Multiple(() =>

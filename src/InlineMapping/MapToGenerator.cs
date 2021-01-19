@@ -13,7 +13,7 @@ namespace InlineMapping
 		private static (ImmutableArray<Diagnostic> diagnostics, string? name, SourceText? text) GenerateMapping(
 			ITypeSymbol sourceType, AttributeData attributeData, ConfigurationValues configurationValues)
 		{
-			var information = new MappingInformation(sourceType, attributeData);
+			MappingInformation information = new(sourceType, attributeData);
 
 			if (!information.Diagnostics.Any(_ => _.Severity == DiagnosticSeverity.Error))
 			{
@@ -34,14 +34,12 @@ namespace InlineMapping
 				foreach (var candidateTypeNode in receiver.Candidates)
 				{
 					var model = compilation.GetSemanticModel(candidateTypeNode.SyntaxTree);
-					var candidateTypeSymbol = model.GetDeclaredSymbol(candidateTypeNode) as ITypeSymbol;
-
-					if (candidateTypeSymbol is not null)
+					if (model.GetDeclaredSymbol(candidateTypeNode) is ITypeSymbol candidateTypeSymbol)
 					{
 						foreach (var mappingAttribute in candidateTypeSymbol.GetAttributes().Where(
 							_ => _.AttributeClass!.Equals(mapToAttributeSymbol, SymbolEqualityComparer.Default)))
 						{
-							var configurationValues = new ConfigurationValues(context, candidateTypeNode.SyntaxTree);
+							ConfigurationValues configurationValues = new(context, candidateTypeNode.SyntaxTree);
 							var (diagnostics, name, text) = MapToGenerator.GenerateMapping(
 								candidateTypeSymbol, mappingAttribute, configurationValues);
 

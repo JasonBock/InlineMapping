@@ -1,28 +1,29 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace InlineMapping
 {
 	internal sealed class MapToReceiver
 		: ISyntaxReceiver
 	{
-		public List<TypeDeclarationSyntax> Candidates { get; } = new List<TypeDeclarationSyntax>();
+		public List<TypeDeclarationSyntax> Candidates { get; } = new();
 		
 		public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
 		{
-			if(syntaxNode is TypeDeclarationSyntax typeDeclarationSyntax)
+			if (syntaxNode is TypeDeclarationSyntax typeDeclarationSyntax)
 			{
-				foreach (var attributeList in typeDeclarationSyntax.AttributeLists)
+				foreach (var attributeList 
+					in typeDeclarationSyntax.AttributeLists.SelectMany(
+						attributeList =>
+							attributeList.Attributes
+							.Select(attribute => attribute.Name.ToString())
+							.Where(
+								attributeName =>
+									attributeName == "MapTo" || attributeName == "MapToAttribute")))
 				{
-					foreach (var attribute in attributeList.Attributes)
-					{
-						if(attribute.Name.ToString() == "MapTo" ||
-							attribute.Name.ToString() == "MapToAttribute")
-						{
-							this.Candidates.Add(typeDeclarationSyntax);
-						}
-					}
+					this.Candidates.Add(typeDeclarationSyntax);
 				}
 			}
 		}

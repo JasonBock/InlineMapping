@@ -1,7 +1,7 @@
 ﻿using InlineMapping.Host;
 using System;
 
-var source = new Source
+Source source = new()
 {
 	Id = Guid.NewGuid(),
 	Name = "Jeff",

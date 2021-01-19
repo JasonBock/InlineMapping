@@ -15,11 +15,11 @@ namespace InlineMapping
 
 		private static SourceText Build(MappingInformation information, ConfigurationValues configurationValues)
 		{
-			using var writer = new StringWriter();
-			using var indentWriter = new IndentedTextWriter(writer, 
+			using StringWriter writer = new();
+			using IndentedTextWriter indentWriter = new(writer,
 				configurationValues.IndentStyle == IndentStyle.Tab ? "\t" : new string(' ', (int)configurationValues.IndentSize));
 
-			var usingStatements = new SortedSet<string>();
+			SortedSet<string> usingStatements = new();
 
 			if (!information.SourceType.IsValueType)
 			{
@@ -38,7 +38,7 @@ namespace InlineMapping
 				indentWriter.WriteLine(usingStatement);
 			}
 
-			if (usingStatements.Count > 0)
+			if (usingStatements is { Count: > 0 })
 			{
 				indentWriter.WriteLine();
 			}

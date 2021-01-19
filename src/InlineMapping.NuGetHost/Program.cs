@@ -1,7 +1,7 @@
 ﻿using InlineMapping;
 using System;
 
-var source = new Source { Id = Guid.NewGuid(), Name = "Joe", When = DateTime.Now };
+Source source = new() { Id = Guid.NewGuid(), Name = "Joe", When = DateTime.Now };
 var destination = source.MapToDestination();
 
 Console.Out.WriteLine(destination.Id);

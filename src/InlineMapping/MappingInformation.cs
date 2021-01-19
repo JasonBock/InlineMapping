@@ -71,7 +71,7 @@ namespace InlineMapping
 						NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title)), null));
 			}
 
-			if (maps.Count == 0)
+			if (maps is { Count: 0 })
 			{
 				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
 					NoPropertyMapsFoundDescriptorConstants.Id, NoPropertyMapsFoundDescriptorConstants.Title,
