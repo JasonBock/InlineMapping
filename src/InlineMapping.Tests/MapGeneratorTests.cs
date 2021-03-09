@@ -8,12 +8,12 @@ using System.Linq;
 
 namespace InlineMapping.Tests
 {
-	public static class MapToGeneratorTests
+	public static class MapGeneratorTests
 	{
 		[Test]
 		public static void GenerateWithClasses()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination 
@@ -41,7 +41,7 @@ public class Source
 		[Test]
 		public static void GenerateWithStructs()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public struct Destination 
@@ -69,7 +69,7 @@ public struct Source
 		[Test]
 		public static void GenerateWithRecords()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public record Destination 
@@ -97,7 +97,7 @@ public record Source
 		[Test]
 		public static void GenerateWhenSourceIsInNamespaceAndDestinationIsNotInNamespace()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination 
@@ -125,7 +125,7 @@ namespace SourceNamespace
 		[Test]
 		public static void GenerateWhenSourceIsNotInNamespaceAndDestinationIsInNamespace()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 namespace DestinationNamespace
@@ -153,7 +153,7 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationIsInSourceNamespace()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 namespace BaseNamespace
@@ -185,7 +185,7 @@ namespace BaseNamespace.SubNamespace
 		[Test]
 		public static void GenerateWhenDestinationIsNotInSourceNamespace()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 namespace DestinationNamespace
@@ -217,7 +217,7 @@ namespace SourceNamespace
 		[Test]
 		public static void GenerateWhenNoPropertiesExist()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination { }
@@ -236,7 +236,7 @@ public class Source { }");
 		[Test]
 		public static void GenerateWhenSourcePropertyIsNotPublic()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination 
@@ -264,7 +264,7 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationPropertyIsNotPublic()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination 
@@ -292,7 +292,7 @@ public class Source
 		[Test]
 		public static void GenerateWhenSourceGetterIsNotPublic()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination 
@@ -320,7 +320,7 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationSetterIsNotPublic()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination 
@@ -348,7 +348,7 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationHasNonPublicNoArgumentConstructor()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination 
@@ -375,7 +375,7 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationHasPublicMultipleArgumentConstructor()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination 
@@ -402,7 +402,7 @@ public class Source
 		[Test]
 		public static void GenerateWhenSourceDoesNotMapAllProperties()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination 
@@ -434,7 +434,7 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationDoesNotMapAllProperties()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination 
@@ -466,7 +466,7 @@ public class Source
 		[Test]
 		public static void GenerateWhenPropertyTypesDoNotMatch()
 		{
-			var (diagnostics, output) = MapToGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 public class Destination 
@@ -498,12 +498,12 @@ public class Source
 			var references = AppDomain.CurrentDomain.GetAssemblies()
 				.Where(_ => !_.IsDynamic && !string.IsNullOrWhiteSpace(_.Location))
 				.Select(_ => MetadataReference.CreateFromFile(_.Location))
-				.Concat(new[] { MetadataReference.CreateFromFile(typeof(MapToGenerator).Assembly.Location) });
+				.Concat(new[] { MetadataReference.CreateFromFile(typeof(MapGenerator).Assembly.Location) });
 			var compilation = CSharpCompilation.Create("generator", new SyntaxTree[] { syntaxTree },
 				references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
 			var originalTreeCount = compilation.SyntaxTrees.Length;
-			var generator = new MapToGenerator();
+			var generator = new MapGenerator();
 
 			var driver = CSharpGeneratorDriver.Create(ImmutableArray.Create<ISourceGenerator>(generator));
 			driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var diagnostics);

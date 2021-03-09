@@ -7,7 +7,7 @@ using System.Linq;
 namespace InlineMapping
 {
 	[Generator]
-	internal sealed class MapToGenerator
+	internal sealed class MapGenerator
 		: ISourceGenerator
 	{
 		private static (ImmutableArray<Diagnostic> diagnostics, string? name, SourceText? text) GenerateMapping(
@@ -26,12 +26,12 @@ namespace InlineMapping
 
 		public void Execute(GeneratorExecutionContext context)
 		{
-			if (context.SyntaxReceiver is MapToReceiver receiver)
+			if (context.SyntaxReceiver is MapReceiver receiver)
 			{
 				var compilation = context.Compilation;
 				var mapToAttributeSymbol = compilation.GetTypeByMetadataName(typeof(MapToAttribute).FullName);
 				
-				foreach (var candidateTypeNode in receiver.Candidates)
+				foreach (var candidateTypeNode in receiver.MapToCandidates)
 				{
 					var model = compilation.GetSemanticModel(candidateTypeNode.SyntaxTree);
 					var candidateTypeSymbol = model.GetDeclaredSymbol(candidateTypeNode) as ITypeSymbol;
@@ -42,7 +42,7 @@ namespace InlineMapping
 							_ => _.AttributeClass!.Equals(mapToAttributeSymbol, SymbolEqualityComparer.Default)))
 						{
 							var configurationValues = new ConfigurationValues(context, candidateTypeNode.SyntaxTree);
-							var (diagnostics, name, text) = MapToGenerator.GenerateMapping(
+							var (diagnostics, name, text) = MapGenerator.GenerateMapping(
 								candidateTypeSymbol, mappingAttribute, configurationValues);
 
 							foreach (var diagnostic in diagnostics)
@@ -61,6 +61,6 @@ namespace InlineMapping
 		}
 
 		public void Initialize(GeneratorInitializationContext context) => 
-			context.RegisterForSyntaxNotifications(() => new MapToReceiver());
+			context.RegisterForSyntaxNotifications(() => new MapReceiver());
 	}
 }
