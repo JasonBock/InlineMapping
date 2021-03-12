@@ -1,4 +1,8 @@
-﻿using NUnit.Framework;
+﻿using InlineMapping;
+using InlineMapping.IntegrationTests;
+using NUnit.Framework;
+
+[assembly: Map(typeof(SourceForMap), typeof(DestinationForMap))]
 
 namespace InlineMapping.IntegrationTests
 {
@@ -7,23 +11,19 @@ namespace InlineMapping.IntegrationTests
 		[Test]
 		public static void Map()
 		{
-			var source = new Source { Id = 3 };
-			var destination = source.MapToDestination();
+			var source = new SourceForMap { Id = 3 };
+			var destination = source.MapToDestinationForMap();
 
-			Assert.Multiple(() =>
-			{
-				Assert.That(destination.Id, Is.EqualTo(source.Id));
-			});
+			Assert.That(destination.Id, Is.EqualTo(source.Id));
 		}
 	}
 
-	[MapTo(typeof(Destination))]
-	public class Source
+	public class SourceForMap
 	{
 		public int Id { get; set; }
 	}
 
-	public class Destination
+	public class DestinationForMap
 	{
 		public int Id { get; set; }
 	}
