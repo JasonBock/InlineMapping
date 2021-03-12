@@ -8,10 +8,14 @@ namespace InlineMapping.Tests
 {
 	public static class MapReceiverTests
 	{
-		[Test]
-		public static async Task FindCandidatesWhenAttributeIsDeclaredAsMapFromAsync()
+		[TestCase("[MapFrom] public class Source { }", 1, 0)]
+		[TestCase("[MapFromAttribute] public class Source { }", 1, 0)]
+		[TestCase("[MapTo] public class Source { }", 0, 1)]
+		[TestCase("[MapToAttribute] public class Source { }", 0, 1)]
+		public static async Task FindCandidatesWhenAttributeIsTargetingATypeAsync(
+			string code, int expectedFromCount, int expectedToCount)
 		{
-			var classDeclaration = (await SyntaxFactory.ParseSyntaxTree("[MapFrom] public class Source { }")
+			var classDeclaration = (await SyntaxFactory.ParseSyntaxTree(code)
 				.GetRootAsync().ConfigureAwait(false)).DescendantNodes(_ => true).OfType<ClassDeclarationSyntax>().First();
 
 			var receiver = new MapReceiver();
@@ -19,78 +23,35 @@ namespace InlineMapping.Tests
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(receiver.MapToCandidates.Count, Is.GreaterThan(0));
-				Assert.That(receiver.MapToCandidates[0].Identifier.Text, Is.EqualTo("Source"));
+				Assert.That(receiver.MapFromCandidates.Count, Is.EqualTo(expectedFromCount));
+				Assert.That(receiver.MapToCandidates.Count, Is.EqualTo(expectedToCount));
+				Assert.That(receiver.MapCandidates.Count, Is.EqualTo(0));
 			});
 		}
 
-		[Test]
-		public static async Task FindCandidatesWhenAttributeIsDeclaredAsMapFromAttributeAsync()
+		[TestCase("[assembly: Map]")]
+		[TestCase("[assembly: MapAttribute]")]
+		public static async Task FindCandidatesWhenAttributeIsTargetingAnAssemblyAsync(string code)
 		{
-			var classDeclaration = (await SyntaxFactory.ParseSyntaxTree("[MapFromAttribute] public class Source { }")
-				.GetRootAsync().ConfigureAwait(false)).DescendantNodes(_ => true).OfType<ClassDeclarationSyntax>().First();
+			var attributeDeclaration = (await SyntaxFactory.ParseSyntaxTree(code)
+				.GetRootAsync().ConfigureAwait(false)).DescendantNodes(_ => true).OfType<AttributeSyntax>().First();
 
 			var receiver = new MapReceiver();
-			receiver.OnVisitSyntaxNode(classDeclaration);
+			receiver.OnVisitSyntaxNode(attributeDeclaration);
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(receiver.MapToCandidates.Count, Is.GreaterThan(0));
-				Assert.That(receiver.MapToCandidates[0].Identifier.Text, Is.EqualTo("Source"));
-			});
-		}
-
-		[Test]
-		public static async Task FindCandidatesWhenAttributeIsDeclaredAsMapToAsync()
-		{
-			var classDeclaration = (await SyntaxFactory.ParseSyntaxTree("[MapTo] public class Source { }")
-				.GetRootAsync().ConfigureAwait(false)).DescendantNodes(_ => true).OfType<ClassDeclarationSyntax>().First();
-
-			var receiver = new MapReceiver();
-			receiver.OnVisitSyntaxNode(classDeclaration);
-
-			Assert.Multiple(() =>
-			{
-				Assert.That(receiver.MapToCandidates.Count, Is.GreaterThan(0));
-				Assert.That(receiver.MapToCandidates[0].Identifier.Text, Is.EqualTo("Source"));
-			});
-		}
-
-		[Test]
-		public static async Task FindCandidatesWhenAttributeIsDeclaredAsMapToAttributeAsync()
-		{
-			var classDeclaration = (await SyntaxFactory.ParseSyntaxTree("[MapToAttribute] public class Source { }")
-				.GetRootAsync().ConfigureAwait(false)).DescendantNodes(_ => true).OfType<ClassDeclarationSyntax>().First();
-
-			var receiver = new MapReceiver();
-			receiver.OnVisitSyntaxNode(classDeclaration);
-
-			Assert.Multiple(() =>
-			{
-				Assert.That(receiver.MapToCandidates.Count, Is.GreaterThan(0));
-				Assert.That(receiver.MapToCandidates[0].Identifier.Text, Is.EqualTo("Source"));
-			});
-		}
-
-		[Test]
-		public static async Task FindCandidatesWhenAttributeIsDeclaredAsDummyAsync()
-		{
-			var classDeclaration = (await SyntaxFactory.ParseSyntaxTree("[Dummy] public class Source { }")
-				.GetRootAsync().ConfigureAwait(false)).DescendantNodes(_ => true).OfType<ClassDeclarationSyntax>().First();
-
-			var receiver = new MapReceiver();
-			receiver.OnVisitSyntaxNode(classDeclaration);
-
-			Assert.Multiple(() =>
-			{
+				Assert.That(receiver.MapFromCandidates.Count, Is.EqualTo(0));
 				Assert.That(receiver.MapToCandidates.Count, Is.EqualTo(0));
+				Assert.That(receiver.MapCandidates.Count, Is.EqualTo(1));
 			});
 		}
 
-		[Test]
-		public static async Task FindCandidatesWithNoAttributes()
+		[TestCase("[Dummy] public class Source { }")]
+		[TestCase("public class Source { }")]
+		public static async Task FindCandidatesWithNoMatchesAsync(string code)
 		{
-			var classDeclaration = (await SyntaxFactory.ParseSyntaxTree("public class Source { }")
+			var classDeclaration = (await SyntaxFactory.ParseSyntaxTree(code)
 				.GetRootAsync().ConfigureAwait(false)).DescendantNodes(_ => true).OfType<ClassDeclarationSyntax>().First();
 
 			var receiver = new MapReceiver();
@@ -98,7 +59,9 @@ namespace InlineMapping.Tests
 
 			Assert.Multiple(() =>
 			{
+				Assert.That(receiver.MapFromCandidates.Count, Is.EqualTo(0));
 				Assert.That(receiver.MapToCandidates.Count, Is.EqualTo(0));
+				Assert.That(receiver.MapCandidates.Count, Is.EqualTo(0));
 			});
 		}
 	}

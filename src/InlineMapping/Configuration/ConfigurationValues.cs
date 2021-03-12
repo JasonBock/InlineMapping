@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 
 namespace InlineMapping.Configuration
@@ -10,9 +11,9 @@ namespace InlineMapping.Configuration
 		private const string IndentStyleKey = "indent_style";
 		private const IndentStyle IndentStyleDefaultValue = IndentStyle.Tab;
 
-		public ConfigurationValues(GeneratorExecutionContext context, SyntaxTree tree)
+		public ConfigurationValues(AnalyzerConfigOptionsProvider optionsProvider, SyntaxTree tree)
 		{
-			var options = context.AnalyzerConfigOptions.GetOptions(tree);
+			var options = optionsProvider.GetOptions(tree);
 
 			this.IndentStyle = options.TryGetValue(ConfigurationValues.IndentStyleKey, out var indentStyle) ?
 				(Enum.TryParse<IndentStyle>(indentStyle, out var indentStyleValue) ? indentStyleValue : ConfigurationValues.IndentStyleDefaultValue) :

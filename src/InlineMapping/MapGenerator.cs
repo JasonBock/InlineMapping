@@ -1,5 +1,6 @@
 ﻿using InlineMapping.Configuration;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using System.Linq;
@@ -10,18 +11,27 @@ namespace InlineMapping
 	internal sealed class MapGenerator
 		: ISourceGenerator
 	{
-		private static (ImmutableArray<Diagnostic> diagnostics, string? name, SourceText? text) GenerateMapping(
-			ITypeSymbol sourceType, AttributeData attributeData, ConfigurationValues configurationValues)
+		private static ImmutableArray<(ImmutableArray<Diagnostic> diagnostics, string? name, SourceText? text)> GenerateMappings(
+			MapReceiver receiver, Compilation compilation, AnalyzerConfigOptionsProvider optionsProvider)
 		{
-			var information = new MappingInformation(sourceType, attributeData);
+			var results = ImmutableArray.CreateBuilder<(ImmutableArray<Diagnostic> diagnostics, string? name, SourceText? text)>();
+			var information = new MappingInformation(receiver, compilation);
 
-			if (!information.Diagnostics.Any(_ => _.Severity == DiagnosticSeverity.Error))
+			foreach(var mapPair in information.Maps)
 			{
-				var text = new MappingBuilder(information, configurationValues).Text;
-				return (information.Diagnostics, $"{sourceType.Name}_To_{information.DestinationType.Name}_Map.g.cs", text);
+				if(!mapPair.Value.diagnostics.Any(_ => _.Severity == DiagnosticSeverity.Error))
+				{
+					var text = new MappingBuilder(mapPair.Key.source, mapPair.Key.destination, mapPair.Value.maps, 
+						new ConfigurationValues(optionsProvider, mapPair.Value.node.SyntaxTree)).Text;
+					results.Add((mapPair.Value.diagnostics, $"{mapPair.Key.source.Name}_To_{mapPair.Key.destination.Name}_Map.g.cs", text));
+				}
+				else
+				{
+					results.Add((mapPair.Value.diagnostics, null, null));
+				}
 			}
 
-			return (information.Diagnostics, null, null);
+			return results.ToImmutable();
 		}
 
 		public void Execute(GeneratorExecutionContext context)
@@ -29,32 +39,18 @@ namespace InlineMapping
 			if (context.SyntaxReceiver is MapReceiver receiver)
 			{
 				var compilation = context.Compilation;
-				var mapToAttributeSymbol = compilation.GetTypeByMetadataName(typeof(MapToAttribute).FullName);
-				
-				foreach (var candidateTypeNode in receiver.MapToCandidates)
+				var results = MapGenerator.GenerateMappings(receiver, compilation, context.AnalyzerConfigOptions);
+
+				foreach(var (diagnostics, name, text) in results)
 				{
-					var model = compilation.GetSemanticModel(candidateTypeNode.SyntaxTree);
-					var candidateTypeSymbol = model.GetDeclaredSymbol(candidateTypeNode) as ITypeSymbol;
-
-					if (candidateTypeSymbol is not null)
+					foreach (var diagnostic in diagnostics)
 					{
-						foreach (var mappingAttribute in candidateTypeSymbol.GetAttributes().Where(
-							_ => _.AttributeClass!.Equals(mapToAttributeSymbol, SymbolEqualityComparer.Default)))
-						{
-							var configurationValues = new ConfigurationValues(context, candidateTypeNode.SyntaxTree);
-							var (diagnostics, name, text) = MapGenerator.GenerateMapping(
-								candidateTypeSymbol, mappingAttribute, configurationValues);
+						context.ReportDiagnostic(diagnostic);
+					}
 
-							foreach (var diagnostic in diagnostics)
-							{
-								context.ReportDiagnostic(diagnostic);
-							}
-
-							if (name is not null && text is not null)
-							{
-								context.AddSource(name, text);
-							}
-						}
+					if (name is not null && text is not null)
+					{
+						context.AddSource(name, text);
 					}
 				}
 			}

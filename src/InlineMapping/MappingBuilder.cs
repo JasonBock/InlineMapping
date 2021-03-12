@@ -1,8 +1,10 @@
 ﻿using InlineMapping.Configuration;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Text;
 
@@ -10,10 +12,10 @@ namespace InlineMapping
 {
 	internal sealed class MappingBuilder
 	{
-		public MappingBuilder(MappingInformation information, ConfigurationValues configurationValues) => 
-			this.Text = MappingBuilder.Build(information, configurationValues);
+		public MappingBuilder(ITypeSymbol source, ITypeSymbol destination, ImmutableArray<string> maps, ConfigurationValues configurationValues) => 
+			this.Text = MappingBuilder.Build(source, destination, maps, configurationValues);
 
-		private static SourceText Build(MappingInformation information, ConfigurationValues configurationValues)
+		private static SourceText Build(ITypeSymbol source, ITypeSymbol destination, ImmutableArray<string> maps, ConfigurationValues configurationValues)
 		{
 			using var writer = new StringWriter();
 			using var indentWriter = new IndentedTextWriter(writer, 
@@ -21,16 +23,16 @@ namespace InlineMapping
 
 			var usingStatements = new SortedSet<string>();
 
-			if (!information.SourceType.IsValueType)
+			if (!source.IsValueType)
 			{
 				usingStatements.Add("using System;");
 			};
 
-			if (!information.DestinationType.ContainingNamespace.IsGlobalNamespace &&
-				!information.SourceType.ContainingNamespace.ToDisplayString().StartsWith(
-					information.DestinationType.ContainingNamespace.ToDisplayString(), StringComparison.InvariantCulture))
+			if (!destination.ContainingNamespace.IsGlobalNamespace &&
+				!source.ContainingNamespace.ToDisplayString().StartsWith(
+					destination.ContainingNamespace.ToDisplayString(), StringComparison.InvariantCulture))
 			{
-				usingStatements.Add($"using {information.DestinationType.ContainingNamespace.ToDisplayString()};");
+				usingStatements.Add($"using {destination.ContainingNamespace.ToDisplayString()};");
 			}
 
 			foreach (var usingStatement in usingStatements)
@@ -43,31 +45,31 @@ namespace InlineMapping
 				indentWriter.WriteLine();
 			}
 
-			if (!information.SourceType.ContainingNamespace.IsGlobalNamespace)
+			if (!source.ContainingNamespace.IsGlobalNamespace)
 			{
-				indentWriter.WriteLine($"namespace {information.SourceType.ContainingNamespace.ToDisplayString()}");
+				indentWriter.WriteLine($"namespace {source.ContainingNamespace.ToDisplayString()}");
 				indentWriter.WriteLine("{");
 				indentWriter.Indent++;
 			}
 
-			indentWriter.WriteLine($"public static partial class {information.SourceType.Name}MapToExtensions");
+			indentWriter.WriteLine($"public static partial class {source.Name}MapToExtensions");
 			indentWriter.WriteLine("{");
 			indentWriter.Indent++;
 
-			indentWriter.WriteLine($"public static {information.DestinationType.Name} MapTo{information.DestinationType.Name}(this {information.SourceType.Name} self) =>");
+			indentWriter.WriteLine($"public static {destination.Name} MapTo{destination.Name}(this {source.Name} self) =>");
 			indentWriter.Indent++;
 
-			if (!information.SourceType.IsValueType)
+			if (!source.IsValueType)
 			{
 				indentWriter.WriteLine("self is null ? throw new ArgumentNullException(nameof(self)) :");
 				indentWriter.Indent++;
 			}
 
-			indentWriter.WriteLine($"new {information.DestinationType.Name}");
+			indentWriter.WriteLine($"new {destination.Name}");
 			indentWriter.WriteLine("{");
 			indentWriter.Indent++;
 
-			foreach (var map in information.Maps)
+			foreach (var map in maps)
 			{
 				indentWriter.WriteLine(map);
 			}
@@ -75,7 +77,7 @@ namespace InlineMapping
 			indentWriter.Indent--;
 			indentWriter.WriteLine("};");
 
-			if (!information.SourceType.IsValueType)
+			if (!source.IsValueType)
 			{
 				indentWriter.Indent--;
 			}
@@ -84,7 +86,7 @@ namespace InlineMapping
 			indentWriter.Indent--;
 			indentWriter.WriteLine("}");
 
-			if (!information.SourceType.ContainingNamespace.IsGlobalNamespace)
+			if (!source.ContainingNamespace.IsGlobalNamespace)
 			{
 				indentWriter.Indent--;
 				indentWriter.WriteLine("}");

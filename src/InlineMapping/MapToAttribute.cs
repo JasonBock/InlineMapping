@@ -2,7 +2,7 @@
 
 namespace InlineMapping
 {
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true)]
 	public sealed class MapToAttribute
 		: Attribute
 	{

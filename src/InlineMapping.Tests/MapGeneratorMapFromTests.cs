@@ -8,20 +8,20 @@ using System.Linq;
 
 namespace InlineMapping.Tests
 {
-	public static class MapGeneratorTests
+	public static class MapGeneratorMapFromTests
 	{
 		[Test]
 		public static void GenerateWithClasses()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public class Destination 
 { 
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -41,15 +41,15 @@ public class Source
 		[Test]
 		public static void GenerateWithStructs()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public struct Destination 
 { 
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination))]
 public struct Source 
 { 
 	public string Id { get; set; }
@@ -69,15 +69,15 @@ public struct Source
 		[Test]
 		public static void GenerateWithRecords()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public record Destination 
 { 
 	public string Id { get; init; }
 }
 
-[MapTo(typeof(Destination))]
 public record Source 
 { 
 	public string Id { get; init; }
@@ -97,9 +97,10 @@ public record Source
 		[Test]
 		public static void GenerateWhenSourceIsInNamespaceAndDestinationIsNotInNamespace()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(SourceNamespace.Source))]
 public class Destination 
 { 
 	public string Id { get; set; }
@@ -107,7 +108,6 @@ public class Destination
 
 namespace SourceNamespace
 {
-	[MapTo(typeof(Destination))]
 	public class Source 
 	{ 
 		public string Id { get; set; }
@@ -125,18 +125,18 @@ namespace SourceNamespace
 		[Test]
 		public static void GenerateWhenSourceIsNotInNamespaceAndDestinationIsInNamespace()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 namespace DestinationNamespace
 {
+	[MapFrom(typeof(Source))]
 	public class Destination 
 	{ 
 		public string Id { get; set; }
 	}
 }
 
-[MapTo(typeof(DestinationNamespace.Destination)]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -153,11 +153,12 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationIsInSourceNamespace()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 namespace BaseNamespace
 {
+	[MapFrom(typeof(SubNamespace.Source))]
 	public class Destination 
 	{ 
 		public string Id { get; set; }
@@ -166,7 +167,6 @@ namespace BaseNamespace
 
 namespace BaseNamespace.SubNamespace
 {
-	[MapTo(typeof(Destination))]
 	public class Source 
 	{ 
 		public string Id { get; set; }
@@ -185,11 +185,12 @@ namespace BaseNamespace.SubNamespace
 		[Test]
 		public static void GenerateWhenDestinationIsNotInSourceNamespace()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
 namespace DestinationNamespace
 {
+	[MapFrom(typeof(SourceNamespace.Source))]
 	public class Destination 
 	{ 
 		public string Id { get; set; }
@@ -198,7 +199,6 @@ namespace DestinationNamespace
 
 namespace SourceNamespace
 {
-	[MapTo(typeof(DestinationNamespace.Destination)]
 	public class Source 
 	{ 
 		public string Id { get; set; }
@@ -217,12 +217,12 @@ namespace SourceNamespace
 		[Test]
 		public static void GenerateWhenNoPropertiesExist()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public class Destination { }
 
-[MapTo(typeof(Destination))]
 public class Source { }");
 
 			Assert.Multiple(() =>
@@ -236,15 +236,15 @@ public class Source { }");
 		[Test]
 		public static void GenerateWhenSourcePropertyIsNotPublic()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public class Destination 
 { 
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination))]
 public class Source 
 { 
 	private string Id { get; set; }
@@ -264,15 +264,15 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationPropertyIsNotPublic()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public class Destination 
 { 
 	private string Id { get; set; }
 }
 
-[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -292,15 +292,15 @@ public class Source
 		[Test]
 		public static void GenerateWhenSourceGetterIsNotPublic()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public class Destination 
 { 
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { private get; set; }
@@ -320,15 +320,15 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationSetterIsNotPublic()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public class Destination 
 { 
 	public string Id { get; private set; }
 }
 
-[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -348,9 +348,10 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationHasNonPublicNoArgumentConstructor()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public class Destination 
 {
 	private Destination() { }
@@ -358,7 +359,6 @@ public class Destination
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -375,9 +375,10 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationHasPublicMultipleArgumentConstructor()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public class Destination 
 {
 	public Destination(int id) { }
@@ -385,7 +386,6 @@ public class Destination
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -402,15 +402,15 @@ public class Source
 		[Test]
 		public static void GenerateWhenSourceDoesNotMapAllProperties()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public class Destination 
 { 
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -434,16 +434,16 @@ public class Source
 		[Test]
 		public static void GenerateWhenDestinationDoesNotMapAllProperties()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public class Destination 
 { 
 	public string Id { get; set; }
 	public string Name { get; set; }
 }
 
-[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -466,15 +466,15 @@ public class Source
 		[Test]
 		public static void GenerateWhenPropertyTypesDoNotMatch()
 		{
-			var (diagnostics, output) = MapGeneratorTests.GetGeneratedOutput(
+			var (diagnostics, output) = MapGeneratorMapFromTests.GetGeneratedOutput(
 @"using InlineMapping;
 
+[MapFrom(typeof(Source))]
 public class Destination 
 { 
 	public string Id { get; set; }
 }
 
-[MapTo(typeof(Destination))]
 public class Source 
 { 
 	public int Id { get; set; }
