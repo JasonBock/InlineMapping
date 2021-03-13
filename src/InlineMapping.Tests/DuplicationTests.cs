@@ -31,7 +31,7 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(diagnostics[0].Id, Is.EqualTo(DuplicatedAttributeDescriptorConstants.Id));
+				Assert.That(diagnostics[0].Id, Is.EqualTo(DuplicatedAttributeDiagnostic.Id));
 				Assert.That(output.Length, Is.GreaterThan(0));
 			});
 		}
@@ -58,7 +58,7 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(diagnostics[0].Id, Is.EqualTo(DuplicatedAttributeDescriptorConstants.Id));
+				Assert.That(diagnostics[0].Id, Is.EqualTo(DuplicatedAttributeDiagnostic.Id));
 				Assert.That(output.Length, Is.GreaterThan(0));
 			});
 		}
@@ -85,7 +85,7 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(diagnostics[0].Id, Is.EqualTo(DuplicatedAttributeDescriptorConstants.Id));
+				Assert.That(diagnostics[0].Id, Is.EqualTo(DuplicatedAttributeDiagnostic.Id));
 				Assert.That(output.Length, Is.GreaterThan(0));
 			});
 		}

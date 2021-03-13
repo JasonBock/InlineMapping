@@ -3,21 +3,16 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Linq;
-using Maps = System.Collections.Immutable.ImmutableDictionary<(Microsoft.CodeAnalysis.ITypeSymbol source, Microsoft.CodeAnalysis.ITypeSymbol destination), 
+using Maps = System.Collections.Immutable.ImmutableDictionary<(Microsoft.CodeAnalysis.ITypeSymbol source, Microsoft.CodeAnalysis.ITypeSymbol destination),
 	(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> diagnostics, Microsoft.CodeAnalysis.SyntaxNode node, System.Collections.Immutable.ImmutableArray<string> maps)>;
 
 namespace InlineMapping
 {
 	internal sealed class MappingInformation
 	{
-		// I have no idea why it's causing this to trip here, but not in my Rocks project
-		// with the MockInformation type. I KNOW it's going to be non-null!
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 		public MappingInformation(MapReceiver receiver, Compilation compilation) =>
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-			this.Validate(receiver, compilation);
+			this.Maps = this.Validate(receiver, compilation);
 
 		private static void ValidateMapFrom(List<TypeDeclarationSyntax> mapFromCandidates, Maps.Builder maps, Compilation compilation) 
 		{
@@ -91,12 +86,7 @@ namespace InlineMapping
 			if (maps.ContainsKey(key))
 			{
 				var diagnostics = maps[key].diagnostics.ToList();
-				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
-					DuplicatedAttributeDescriptorConstants.Id, DuplicatedAttributeDescriptorConstants.Title,
-					DuplicatedAttributeDescriptorConstants.Message, DescriptorConstants.Usage, DiagnosticSeverity.Warning, true,
-					helpLinkUri: HelpUrlBuilder.Build(
-						DuplicatedAttributeDescriptorConstants.Id, DuplicatedAttributeDescriptorConstants.Title)),
-					currentNode.GetLocation(), new[] { maps[key].node }));
+				diagnostics.Add(DuplicatedAttributeDiagnostic.Create(currentNode, maps[key].node));
 				maps[key] = (diagnostics.ToImmutableArray(), maps[key].node, maps[key].maps);
 			}
 			else
@@ -105,12 +95,7 @@ namespace InlineMapping
 
 				if (!destination.Constructors.Any(_ => _.DeclaredAccessibility == Accessibility.Public && _.Parameters.Length == 0))
 				{
-					diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
-						NoArgumentConstructorDescriptorConstants.Id, NoArgumentConstructorDescriptorConstants.Title,
-						NoArgumentConstructorDescriptorConstants.Message, DescriptorConstants.Usage, DiagnosticSeverity.Error, true,
-						helpLinkUri: HelpUrlBuilder.Build(
-							NoArgumentConstructorDescriptorConstants.Id, NoArgumentConstructorDescriptorConstants.Title)),
-						currentNode.GetLocation()));
+					diagnostics.Add(NoArgumentConstructorDiagnostic.Create(currentNode));
 				}
 
 				var propertyMaps = ImmutableArray.CreateBuilder<string>();
@@ -134,40 +119,25 @@ namespace InlineMapping
 					}
 					else
 					{
-						diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
-							NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title,
-							string.Format(CultureInfo.CurrentCulture, NoMatchDescriptorConstants.Message, sourceProperty.Name, "source", source.Name),
-							DescriptorConstants.Usage, DiagnosticSeverity.Info, true,
-							helpLinkUri: HelpUrlBuilder.Build(
-								NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title)), null));
+						diagnostics.Add(NoMatchDiagnostic.Create(sourceProperty, "source", source));
 					}
 				}
 
 				foreach (var remainingDestinationProperty in destinationProperties)
 				{
-					diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
-						NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title,
-						string.Format(CultureInfo.CurrentCulture, NoMatchDescriptorConstants.Message, remainingDestinationProperty.Name, "destination", destination.Name),
-						DescriptorConstants.Usage, DiagnosticSeverity.Info, true,
-						helpLinkUri: HelpUrlBuilder.Build(
-							NoMatchDescriptorConstants.Id, NoMatchDescriptorConstants.Title)), null));
+					diagnostics.Add(NoMatchDiagnostic.Create(remainingDestinationProperty, "destination", destination));
 				}
 
 				if (propertyMaps.Count == 0)
 				{
-					diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
-						NoPropertyMapsFoundDescriptorConstants.Id, NoPropertyMapsFoundDescriptorConstants.Title,
-						NoPropertyMapsFoundDescriptorConstants.Message, DescriptorConstants.Usage, DiagnosticSeverity.Error, true,
-						helpLinkUri: HelpUrlBuilder.Build(
-							NoPropertyMapsFoundDescriptorConstants.Id, NoPropertyMapsFoundDescriptorConstants.Title)),
-						currentNode.GetLocation()));
+					diagnostics.Add(NoPropertyMapsFoundDiagnostic.Create(currentNode));
 				}
 
 				maps.Add((source, destination), (diagnostics.ToImmutable(), currentNode, propertyMaps.ToImmutable()));
 			}
 		}
 
-		private void Validate(MapReceiver receiver, Compilation compilation)
+		private Maps Validate(MapReceiver receiver, Compilation compilation)
 		{
 			var maps = ImmutableDictionary.CreateBuilder<(ITypeSymbol, ITypeSymbol), (ImmutableArray<Diagnostic>, SyntaxNode, ImmutableArray<string>)>();
 
@@ -175,9 +145,9 @@ namespace InlineMapping
 			MappingInformation.ValidateMapFrom(receiver.MapFromCandidates, maps, compilation);
 			MappingInformation.ValidateMap(receiver.MapCandidates, maps, compilation);
 
-			this.Maps = maps.ToImmutable();
+			return maps.ToImmutable();
 		}
 
-		public Maps Maps { get; private set; }
+		public Maps Maps { get; }
 	}
 }

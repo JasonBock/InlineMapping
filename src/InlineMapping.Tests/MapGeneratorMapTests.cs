@@ -236,7 +236,7 @@ public class Source { }");
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(diagnostics[0].Id, Is.EqualTo(NoPropertyMapsFoundDescriptorConstants.Id));
+				Assert.That(diagnostics[0].Id, Is.EqualTo(NoPropertyMapsFoundDiagnostic.Id));
 				Assert.That(output, Is.EqualTo(string.Empty));
 			});
 		}
@@ -262,8 +262,8 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(2));
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDescriptorConstants.Id), Throws.Nothing);
-				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDiagnostic.Id), Throws.Nothing);
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDiagnostic.Id).GetMessage();
 				Assert.That(noMatchMessage, Contains.Substring("Id"));
 				Assert.That(noMatchMessage, Contains.Substring("destination type Destination"));
 				Assert.That(output, Is.EqualTo(string.Empty));
@@ -291,8 +291,8 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(2));
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDescriptorConstants.Id), Throws.Nothing);
-				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDiagnostic.Id), Throws.Nothing);
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDiagnostic.Id).GetMessage();
 				Assert.That(noMatchMessage, Contains.Substring("Id"));
 				Assert.That(noMatchMessage, Contains.Substring("source type Source"));
 				Assert.That(output, Is.EqualTo(string.Empty));
@@ -320,8 +320,8 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(2));
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDescriptorConstants.Id), Throws.Nothing);
-				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDiagnostic.Id), Throws.Nothing);
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDiagnostic.Id).GetMessage();
 				Assert.That(noMatchMessage, Contains.Substring("Id"));
 				Assert.That(noMatchMessage, Contains.Substring("destination type Destination"));
 				Assert.That(output, Is.EqualTo(string.Empty));
@@ -349,8 +349,8 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(2));
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDescriptorConstants.Id), Throws.Nothing);
-				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDiagnostic.Id), Throws.Nothing);
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDiagnostic.Id).GetMessage();
 				Assert.That(noMatchMessage, Contains.Substring("Id"));
 				Assert.That(noMatchMessage, Contains.Substring("source type Source"));
 				Assert.That(output, Is.EqualTo(string.Empty));
@@ -380,7 +380,7 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoArgumentConstructorDescriptorConstants.Id), Throws.Nothing);
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoArgumentConstructorDiagnostic.Id), Throws.Nothing);
 				Assert.That(output, Is.EqualTo(string.Empty));
 			});
 		}
@@ -408,7 +408,7 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoArgumentConstructorDescriptorConstants.Id), Throws.Nothing);
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoArgumentConstructorDiagnostic.Id), Throws.Nothing);
 				Assert.That(output, Is.EqualTo(string.Empty));
 			});
 		}
@@ -435,7 +435,7 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDiagnostic.Id).GetMessage();
 				Assert.That(noMatchMessage, Contains.Substring("Name"));
 				Assert.That(noMatchMessage, Contains.Substring("source type Source"));
 				Assert.That(output, Does.Not.Contain("namespace"));
@@ -468,7 +468,7 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id).GetMessage();
+				var noMatchMessage = diagnostics.Single(_ => _.Id == NoMatchDiagnostic.Id).GetMessage();
 				Assert.That(noMatchMessage, Contains.Substring("Name"));
 				Assert.That(noMatchMessage, Contains.Substring("destination type Destination"));
 				Assert.That(output, Does.Not.Contain("namespace"));
@@ -500,10 +500,10 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(3));
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDescriptorConstants.Id), Throws.Nothing);
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id && 
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDiagnostic.Id), Throws.Nothing);
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoMatchDiagnostic.Id && 
 					_.GetMessage().Contains("source type Source", StringComparison.InvariantCulture)), Throws.Nothing);
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoMatchDescriptorConstants.Id &&
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoMatchDiagnostic.Id &&
 					_.GetMessage().Contains("destination type Destination", StringComparison.InvariantCulture)), Throws.Nothing);
 				Assert.That(output, Is.EqualTo(string.Empty));
 			});
