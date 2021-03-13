@@ -86,21 +86,23 @@ namespace InlineMapping
 		private static void ValidatePairs(SyntaxNode currentNode, INamedTypeSymbol source, INamedTypeSymbol destination, 
 			Maps.Builder maps)
 		{
-			var diagnostics = ImmutableArray.CreateBuilder<Diagnostic>();
 			var key = (source, destination);
 
 			if (maps.ContainsKey(key))
 			{
-				var previousNode = maps[key].node;
+				var diagnostics = maps[key].diagnostics.ToList();
 				diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
 					DuplicatedAttributeDescriptorConstants.Id, DuplicatedAttributeDescriptorConstants.Title,
 					DuplicatedAttributeDescriptorConstants.Message, DescriptorConstants.Usage, DiagnosticSeverity.Warning, true,
 					helpLinkUri: HelpUrlBuilder.Build(
 						DuplicatedAttributeDescriptorConstants.Id, DuplicatedAttributeDescriptorConstants.Title)),
-					currentNode.GetLocation(), new[] { previousNode }));
+					currentNode.GetLocation(), new[] { maps[key].node }));
+				maps[key] = (diagnostics.ToImmutableArray(), maps[key].node, maps[key].maps);
 			}
 			else
 			{
+				var diagnostics = ImmutableArray.CreateBuilder<Diagnostic>();
+
 				if (!destination.Constructors.Any(_ => _.DeclaredAccessibility == Accessibility.Public && _.Parameters.Length == 0))
 				{
 					diagnostics.Add(Diagnostic.Create(new DiagnosticDescriptor(
