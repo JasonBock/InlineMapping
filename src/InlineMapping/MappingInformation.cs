@@ -1,4 +1,5 @@
 ﻿using InlineMapping.Descriptors;
+using InlineMapping.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
@@ -101,10 +102,15 @@ namespace InlineMapping
 				var propertyMaps = ImmutableArray.CreateBuilder<string>();
 
 				var destinationProperties = destination.GetMembers().OfType<IPropertySymbol>()
-					.Where(_ => _.SetMethod is not null && _.SetMethod.DeclaredAccessibility == Accessibility.Public).ToList();
+					.Where(_ => _.SetMethod is not null && 
+						(_.SetMethod.DeclaredAccessibility == Accessibility.Public ||
+						(destination.ContainingAssembly.ExposesInternalsTo(source.ContainingAssembly) && _.SetMethod.DeclaredAccessibility == Accessibility.Friend)))
+					.ToList();
 
 				foreach (var sourceProperty in source.GetMembers().OfType<IPropertySymbol>()
-					.Where(_ => _.GetMethod is not null && _.GetMethod.DeclaredAccessibility == Accessibility.Public))
+					.Where(_ => _.GetMethod is not null && 
+						(_.GetMethod.DeclaredAccessibility == Accessibility.Public ||
+						(source.ContainingAssembly.ExposesInternalsTo(destination.ContainingAssembly) && _.GetMethod.DeclaredAccessibility == Accessibility.Friend))))
 				{
 					var destinationProperty = destinationProperties.FirstOrDefault(
 						_ => _.Name == sourceProperty.Name &&
