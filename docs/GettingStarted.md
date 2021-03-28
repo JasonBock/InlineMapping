@@ -35,7 +35,7 @@ To do a mapping, all you need to do is something like this:
 ```
 var source = new Source
 {
-	Id = 3
+  Id = 3
 };
 
 var destination = source.MapToDestination();
