@@ -1,8 +1,6 @@
 ﻿using InlineMapping.Descriptors;
 using InlineMapping.Extensions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Maps = System.Collections.Immutable.ImmutableDictionary<(Microsoft.CodeAnalysis.ITypeSymbol source, Microsoft.CodeAnalysis.ITypeSymbol destination),
@@ -14,70 +12,6 @@ namespace InlineMapping
 	{
 		public MappingInformation(MapReceiver receiver, Compilation compilation) =>
 			this.Maps = this.Validate(receiver, compilation);
-
-		private static void ValidateMapFrom(List<TypeDeclarationSyntax> mapFromCandidates, Maps.Builder maps, Compilation compilation) 
-		{
-			var mapFromAttributeSymbol = compilation.GetTypeByMetadataName(typeof(MapFromAttribute).FullName);
-
-			foreach (var candidateTypeNode in mapFromCandidates)
-			{
-				var model = compilation.GetSemanticModel(candidateTypeNode.SyntaxTree);
-				var destinationType = model.GetDeclaredSymbol(candidateTypeNode) as INamedTypeSymbol;
-
-				if (destinationType is not null)
-				{
-					foreach (var mappingAttribute in destinationType.GetAttributes().Where(
-						_ => _.AttributeClass!.Equals(mapFromAttributeSymbol, SymbolEqualityComparer.Default)))
-					{
-						var sourceType = (INamedTypeSymbol)mappingAttribute.ConstructorArguments[0].Value!;
-						MappingInformation.ValidatePairs(mappingAttribute.ApplicationSyntaxReference!.GetSyntax(),
-							sourceType, destinationType, maps);
-					}
-				}
-			}
-		}
-
-		private static void ValidateMapTo(List<TypeDeclarationSyntax> mapToCandidates, Maps.Builder maps, Compilation compilation) 
-		{
-			var mapToAttributeSymbol = compilation.GetTypeByMetadataName(typeof(MapToAttribute).FullName);
-
-			foreach (var candidateTypeNode in mapToCandidates)
-			{
-				var model = compilation.GetSemanticModel(candidateTypeNode.SyntaxTree);
-				var sourceType = model.GetDeclaredSymbol(candidateTypeNode) as INamedTypeSymbol;
-
-				if (sourceType is not null)
-				{
-					foreach (var mappingAttribute in sourceType.GetAttributes().Where(
-						_ => _.AttributeClass!.Equals(mapToAttributeSymbol, SymbolEqualityComparer.Default)))
-					{
-						var destinationType = (INamedTypeSymbol)mappingAttribute.ConstructorArguments[0].Value!;
-						MappingInformation.ValidatePairs(mappingAttribute.ApplicationSyntaxReference!.GetSyntax(), 
-							sourceType, destinationType, maps);							
-					}
-				}
-			}
-		}
-
-		private static void ValidateMap(List<AttributeSyntax> mapCandidates, Maps.Builder maps, Compilation compilation) 
-		{
-			var mapAttributeSymbol = compilation.GetTypeByMetadataName(typeof(MapAttribute).FullName);
-
-			foreach (var candidateAttributeNode in mapCandidates)
-			{
-				var attributeSymbol = compilation.GetSemanticModel(candidateAttributeNode.SyntaxTree)
-					.GetSymbolInfo(candidateAttributeNode).Symbol!.ContainingSymbol;
-
-				if (attributeSymbol.Equals(mapAttributeSymbol, SymbolEqualityComparer.Default))
-				{
-					var attributeData = compilation.Assembly.GetAttributes().Single(
-						_ => _.ApplicationSyntaxReference!.GetSyntax() == candidateAttributeNode);
-					var sourceType = (INamedTypeSymbol)attributeData.ConstructorArguments[0].Value!;
-					var destinationType = (INamedTypeSymbol)attributeData.ConstructorArguments[1].Value!;
-					MappingInformation.ValidatePairs(candidateAttributeNode, sourceType, destinationType, maps);
-				}
-			}
-		}
 
 		private static void ValidatePairs(SyntaxNode currentNode, INamedTypeSymbol source, INamedTypeSymbol destination, 
 			Maps.Builder maps)
@@ -147,9 +81,10 @@ namespace InlineMapping
 		{
 			var maps = ImmutableDictionary.CreateBuilder<(ITypeSymbol, ITypeSymbol), (ImmutableArray<Diagnostic>, SyntaxNode, ImmutableArray<string>)>();
 
-			MappingInformation.ValidateMapTo(receiver.MapToCandidates, maps, compilation);
-			MappingInformation.ValidateMapFrom(receiver.MapFromCandidates, maps, compilation);
-			MappingInformation.ValidateMap(receiver.MapCandidates, maps, compilation);
+			foreach(var target in receiver.Targets)
+			{
+				MappingInformation.ValidatePairs(target.origination, target.source, target.destination, maps);
+			}
 
 			return maps.ToImmutable();
 		}

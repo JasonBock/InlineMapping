@@ -1,44 +1,53 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace InlineMapping
 {
 	internal sealed class MapReceiver
-		: ISyntaxReceiver
+		: ISyntaxContextReceiver
 	{
-		public List<AttributeSyntax> MapCandidates { get; } = new();
-		public List<TypeDeclarationSyntax> MapFromCandidates { get; } = new();
-		public List<TypeDeclarationSyntax> MapToCandidates { get; } = new();
-		
-		public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
+		public List<(INamedTypeSymbol source, INamedTypeSymbol destination, SyntaxNode origination)> Targets { get; } = new();
+
+		public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
 		{
-			if(syntaxNode is TypeDeclarationSyntax typeDeclarationSyntax)
+			var syntaxNode = context.Node;
+			var model = context.SemanticModel;
+
+			if (syntaxNode is TypeDeclarationSyntax)
 			{
-				foreach (var attributeList in typeDeclarationSyntax.AttributeLists)
+				var mapFromAttributeSymbol = model.Compilation.GetTypeByMetadataName(typeof(MapFromAttribute).FullName);
+				var mapToAttributeSymbol = model.Compilation.GetTypeByMetadataName(typeof(MapToAttribute).FullName);
+				var typeSymbol = model.GetDeclaredSymbol(syntaxNode) as INamedTypeSymbol;
+
+				if (typeSymbol is not null)
 				{
-					foreach (var attribute in attributeList.Attributes)
+					foreach (var typeAttribute in typeSymbol.GetAttributes())
 					{
-						if (attribute.Name.ToString() == nameof(MapFromAttribute).Replace(nameof(Attribute), string.Empty) ||
-							attribute.Name.ToString() == nameof(MapFromAttribute))
+						if (SymbolEqualityComparer.Default.Equals(typeAttribute.AttributeClass!, mapToAttributeSymbol))
 						{
-							this.MapFromCandidates.Add(typeDeclarationSyntax);
+							this.Targets.Add((typeSymbol, (INamedTypeSymbol)typeAttribute.ConstructorArguments[0].Value!, syntaxNode));
 						}
-						else if (attribute.Name.ToString() == nameof(MapToAttribute).Replace(nameof(Attribute), string.Empty) ||
-							attribute.Name.ToString() == nameof(MapToAttribute))
+						else if (SymbolEqualityComparer.Default.Equals(typeAttribute.AttributeClass!, mapFromAttributeSymbol))
 						{
-							this.MapToCandidates.Add(typeDeclarationSyntax);
+							this.Targets.Add(((INamedTypeSymbol)typeAttribute.ConstructorArguments[0].Value!, typeSymbol, syntaxNode));
 						}
 					}
 				}
 			}
-			else if(syntaxNode is AttributeSyntax attributeSyntax)
+			else if(syntaxNode is AttributeSyntax)
 			{
-				if (attributeSyntax.Name.ToString() == nameof(MapAttribute).Replace(nameof(Attribute), string.Empty) ||
-					attributeSyntax.Name.ToString() == nameof(MapAttribute))
+				var mapAttributeSymbol = model.Compilation.GetTypeByMetadataName(typeof(MapAttribute).FullName);
+				var symbol = model.GetSymbolInfo(syntaxNode).Symbol!.ContainingSymbol;
+
+				if(SymbolEqualityComparer.Default.Equals(symbol, mapAttributeSymbol))
 				{
-					this.MapCandidates.Add(attributeSyntax);
+					var attributeData = model.Compilation.Assembly.GetAttributes().Single(
+						_ => _.ApplicationSyntaxReference!.GetSyntax() == syntaxNode);
+					var sourceType = (INamedTypeSymbol)attributeData.ConstructorArguments[0].Value!;
+					var destinationType = (INamedTypeSymbol)attributeData.ConstructorArguments[1].Value!;
+					this.Targets.Add((sourceType, destinationType, syntaxNode));
 				}
 			}
 		}

@@ -36,7 +36,7 @@ namespace InlineMapping
 
 		public void Execute(GeneratorExecutionContext context)
 		{
-			if (context.SyntaxReceiver is MapReceiver receiver)
+			if (context.SyntaxContextReceiver is MapReceiver receiver)
 			{
 				var compilation = context.Compilation;
 				var results = MapGenerator.GenerateMappings(receiver, compilation, context.AnalyzerConfigOptions);
