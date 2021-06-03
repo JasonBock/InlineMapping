@@ -38,8 +38,7 @@ namespace InlineMapping
 		{
 			if (context.SyntaxContextReceiver is MapReceiver receiver)
 			{
-				var compilation = context.Compilation;
-				var results = MapGenerator.GenerateMappings(receiver, compilation, context.AnalyzerConfigOptions);
+				var results = MapGenerator.GenerateMappings(receiver, context.Compilation, context.AnalyzerConfigOptions);
 
 				foreach(var (diagnostics, name, text) in results)
 				{

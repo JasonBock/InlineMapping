@@ -11,13 +11,13 @@ namespace InlineMapping.Tests.Diagnostics
 		[Test]
 		public static void Create()
 		{
-			var diagnostic = NoArgumentConstructorDiagnostic.Create(SyntaxFactory.ClassDeclaration("A"));
+			var diagnostic = NoAccessibleConstructorsDiagnostic.Create(SyntaxFactory.ClassDeclaration("A"));
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(diagnostic.GetMessage(), Is.EqualTo(NoArgumentConstructorDiagnostic.Message));
-				Assert.That(diagnostic.Descriptor.Title.ToString(CultureInfo.CurrentCulture), Is.EqualTo(NoArgumentConstructorDiagnostic.Title));
-				Assert.That(diagnostic.Id, Is.EqualTo(NoArgumentConstructorDiagnostic.Id));
+				Assert.That(diagnostic.GetMessage(), Is.EqualTo(NoAccessibleConstructorsDiagnostic.Message));
+				Assert.That(diagnostic.Descriptor.Title.ToString(CultureInfo.CurrentCulture), Is.EqualTo(NoAccessibleConstructorsDiagnostic.Title));
+				Assert.That(diagnostic.Id, Is.EqualTo(NoAccessibleConstructorsDiagnostic.Id));
 				Assert.That(diagnostic.Severity, Is.EqualTo(DiagnosticSeverity.Error));
 				Assert.That(diagnostic.Descriptor.Category, Is.EqualTo(DescriptorConstants.Usage));
 			});

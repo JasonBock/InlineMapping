@@ -9,7 +9,7 @@ namespace InlineMapping.PerformanceTests
 	[MemoryDiagnoser]
 	public class MappingTests
 	{
-		private readonly Source source = new Source
+		private readonly Source source = new()
 		{
 			Age = 22,
 			Buffer = Guid.NewGuid().ToByteArray(),

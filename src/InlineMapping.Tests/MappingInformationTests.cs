@@ -75,7 +75,7 @@ public class Destination
 		}
 
 		[Test]
-		public static void CreateWhenConstructorWithArgumentsExist()
+		public static void CreateWhenNoAccessibleConstructorsExist()
 		{
 			var code =
 @"using InlineMapping;
@@ -89,8 +89,7 @@ public class Source
 
 public class Destination
 {
-	public Destination(int id) =>
-		this.Id = id;
+	private Destination() { }
 
 	public int Id { get; set; }
 }";
@@ -103,7 +102,7 @@ public class Destination
 				Assert.That(key.source.Name, Is.EqualTo("Source"));
 				Assert.That(key.destination.Name, Is.EqualTo("Destination"));
 				Assert.That(value.diagnostics.Length, Is.EqualTo(1));
-				Assert.That(value.diagnostics[0].Id, Is.EqualTo(NoArgumentConstructorDiagnostic.Id));
+				Assert.That(value.diagnostics[0].Id, Is.EqualTo(NoAccessibleConstructorsDiagnostic.Id));
 				Assert.That(value.node, Is.Not.Null);
 				Assert.That(value.maps.Length, Is.EqualTo(1));
 			});

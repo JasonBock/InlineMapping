@@ -358,7 +358,7 @@ public class Source
 		}
 
 		[Test]
-		public static void GenerateWhenDestinationHasNonPublicNoArgumentConstructor()
+		public static void GenerateWhenDestinationHasNoAccessibleConstructors()
 		{
 			var (diagnostics, output) = MapGeneratorMapTests.GetGeneratedOutput(
 @"using InlineMapping;
@@ -380,35 +380,7 @@ public class Source
 			Assert.Multiple(() =>
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoArgumentConstructorDiagnostic.Id), Throws.Nothing);
-				Assert.That(output, Is.EqualTo(string.Empty));
-			});
-		}
-
-		[Test]
-		public static void GenerateWhenDestinationHasPublicMultipleArgumentConstructor()
-		{
-			var (diagnostics, output) = MapGeneratorMapTests.GetGeneratedOutput(
-@"using InlineMapping;
-
-[assembly: Map(typeof(Source), typeof(Destination))]
-
-public class Destination 
-{
-	public Destination(int id) { }
-
-	public string Id { get; set; }
-}
-
-public class Source 
-{ 
-	public string Id { get; set; }
-}");
-
-			Assert.Multiple(() =>
-			{
-				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoArgumentConstructorDiagnostic.Id), Throws.Nothing);
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoAccessibleConstructorsDiagnostic.Id), Throws.Nothing);
 				Assert.That(output, Is.EqualTo(string.Empty));
 			});
 		}

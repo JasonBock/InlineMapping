@@ -11,10 +11,10 @@ namespace InlineMapping
 	internal sealed class MappingInformation
 	{
 		public MappingInformation(MapReceiver receiver, Compilation compilation) =>
-			this.Maps = this.Validate(receiver, compilation);
+			this.Maps = MappingInformation.Validate(receiver, compilation);
 
 		private static void ValidatePairs(SyntaxNode currentNode, INamedTypeSymbol source, INamedTypeSymbol destination, 
-			Maps.Builder maps)
+			Maps.Builder maps, Compilation compilation)
 		{
 			var key = (source, destination);
 
@@ -28,9 +28,10 @@ namespace InlineMapping
 			{
 				var diagnostics = ImmutableArray.CreateBuilder<Diagnostic>();
 
-				if (!destination.Constructors.Any(_ => _.DeclaredAccessibility == Accessibility.Public && _.Parameters.Length == 0))
+				if (!destination.Constructors.Any(_ => _.DeclaredAccessibility == Accessibility.Public ||
+					destination.ContainingAssembly.ExposesInternalsTo(compilation.Assembly) && _.DeclaredAccessibility == Accessibility.Friend))
 				{
-					diagnostics.Add(NoArgumentConstructorDiagnostic.Create(currentNode));
+					diagnostics.Add(NoAccessibleConstructorsDiagnostic.Create(currentNode));
 				}
 
 				var propertyMaps = ImmutableArray.CreateBuilder<string>();
@@ -38,13 +39,13 @@ namespace InlineMapping
 				var destinationProperties = destination.GetMembers().OfType<IPropertySymbol>()
 					.Where(_ => _.SetMethod is not null && 
 						(_.SetMethod.DeclaredAccessibility == Accessibility.Public ||
-						(destination.ContainingAssembly.ExposesInternalsTo(source.ContainingAssembly) && _.SetMethod.DeclaredAccessibility == Accessibility.Friend)))
+						(destination.ContainingAssembly.ExposesInternalsTo(compilation.Assembly) && _.SetMethod.DeclaredAccessibility == Accessibility.Friend)))
 					.ToList();
 
 				foreach (var sourceProperty in source.GetMembers().OfType<IPropertySymbol>()
 					.Where(_ => _.GetMethod is not null && 
 						(_.GetMethod.DeclaredAccessibility == Accessibility.Public ||
-						(source.ContainingAssembly.ExposesInternalsTo(destination.ContainingAssembly) && _.GetMethod.DeclaredAccessibility == Accessibility.Friend))))
+						(source.ContainingAssembly.ExposesInternalsTo(compilation.Assembly) && _.GetMethod.DeclaredAccessibility == Accessibility.Friend))))
 				{
 					var destinationProperty = destinationProperties.FirstOrDefault(
 						_ => _.Name == sourceProperty.Name &&
@@ -77,13 +78,13 @@ namespace InlineMapping
 			}
 		}
 
-		private Maps Validate(MapReceiver receiver, Compilation compilation)
+		private static Maps Validate(MapReceiver receiver, Compilation compilation)
 		{
 			var maps = ImmutableDictionary.CreateBuilder<(ITypeSymbol, ITypeSymbol), (ImmutableArray<Diagnostic>, SyntaxNode, ImmutableArray<string>)>();
 
-			foreach(var target in receiver.Targets)
+			foreach(var (source, destination, origination) in receiver.Targets)
 			{
-				MappingInformation.ValidatePairs(target.origination, target.source, target.destination, maps);
+				MappingInformation.ValidatePairs(origination, source, destination, maps, compilation);
 			}
 
 			return maps.ToImmutable();
