@@ -3,7 +3,7 @@ using InlineMapping.Extensions;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Linq;
-using Maps = System.Collections.Immutable.ImmutableDictionary<(Microsoft.CodeAnalysis.ITypeSymbol source, Microsoft.CodeAnalysis.ITypeSymbol destination),
+using Maps = System.Collections.Immutable.ImmutableDictionary<(Microsoft.CodeAnalysis.INamedTypeSymbol source, Microsoft.CodeAnalysis.INamedTypeSymbol destination),
 	(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> diagnostics, Microsoft.CodeAnalysis.SyntaxNode node, System.Collections.Immutable.ImmutableArray<string> maps, InlineMapping.ContainingNamespaceKind kind)>;
 
 namespace InlineMapping
@@ -16,7 +16,7 @@ namespace InlineMapping
 		private static Maps Validate(MapReceiver receiver, Compilation compilation)
 		{
 			var maps = ImmutableDictionary.CreateBuilder<
-				(ITypeSymbol, ITypeSymbol), (ImmutableArray<Diagnostic>, SyntaxNode, ImmutableArray<string>, ContainingNamespaceKind)>();
+				(INamedTypeSymbol, INamedTypeSymbol), (ImmutableArray<Diagnostic>, SyntaxNode, ImmutableArray<string>, ContainingNamespaceKind)>();
 
 			foreach(var (source, destination, origination, kind) in receiver.Targets)
 			{

@@ -21,8 +21,8 @@ namespace InlineMapping
 			{
 				if(!mapPair.Value.diagnostics.Any(_ => _.Severity == DiagnosticSeverity.Error))
 				{
-					var text = new MappingBuilder(mapPair.Key.source, mapPair.Key.destination, mapPair.Value.maps, 
-						new ConfigurationValues(optionsProvider, mapPair.Value.node.SyntaxTree)).Text;
+					var text = new MappingBuilder(mapPair.Key.source, mapPair.Key.destination, mapPair.Value.maps, mapPair.Value.kind,
+						compilation, new ConfigurationValues(optionsProvider, mapPair.Value.node.SyntaxTree)).Text;
 					results.Add((mapPair.Value.diagnostics, $"{mapPair.Key.source.Name}_To_{mapPair.Key.destination.Name}_Map.g.cs", text));
 				}
 				else
