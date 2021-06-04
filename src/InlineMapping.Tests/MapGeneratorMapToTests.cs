@@ -136,7 +136,7 @@ namespace DestinationNamespace
 	}
 }
 
-[MapTo(typeof(DestinationNamespace.Destination)]
+[MapTo(typeof(DestinationNamespace.Destination))]
 public class Source 
 { 
 	public string Id { get; set; }
@@ -198,7 +198,7 @@ namespace DestinationNamespace
 
 namespace SourceNamespace
 {
-	[MapTo(typeof(DestinationNamespace.Destination)]
+	[MapTo(typeof(DestinationNamespace.Destination))]
 	public class Source 
 	{ 
 		public string Id { get; set; }

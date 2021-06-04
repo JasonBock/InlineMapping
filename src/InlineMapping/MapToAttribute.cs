@@ -6,9 +6,10 @@ namespace InlineMapping
 	public sealed class MapToAttribute
 		: Attribute
 	{
-		public MapToAttribute(Type destination) =>
-			this.Destination = destination;
+		public MapToAttribute(Type destination, ContainingNamespaceKind kind = ContainingNamespaceKind.Source) =>
+			(this.Destination, this.Kind) = (destination, kind);
 
 		public Type Destination { get; }
+		public ContainingNamespaceKind Kind { get; }
 	}
 }

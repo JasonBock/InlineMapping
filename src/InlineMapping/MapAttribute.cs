@@ -6,10 +6,11 @@ namespace InlineMapping
 	public sealed class MapAttribute
 		: Attribute
 	{
-		public MapAttribute(Type source, Type destination) =>
-			(this.Source, this.Destination) = (source, destination);
+		public MapAttribute(Type source, Type destination, ContainingNamespaceKind kind = ContainingNamespaceKind.Source) =>
+			(this.Source, this.Destination, this.Kind) = (source, destination, kind);
 
 		public Type Destination { get; }
+		public ContainingNamespaceKind Kind { get; }
 		public Type Source { get; }
 	}
 }

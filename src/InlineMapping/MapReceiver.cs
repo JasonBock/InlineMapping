@@ -8,7 +8,7 @@ namespace InlineMapping
 	internal sealed class MapReceiver
 		: ISyntaxContextReceiver
 	{
-		public List<(INamedTypeSymbol source, INamedTypeSymbol destination, SyntaxNode origination)> Targets { get; } = new();
+		public List<(INamedTypeSymbol source, INamedTypeSymbol destination, SyntaxNode origination, ContainingNamespaceKind kind)> Targets { get; } = new();
 
 		public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
 		{
@@ -27,11 +27,13 @@ namespace InlineMapping
 					{
 						if (SymbolEqualityComparer.Default.Equals(typeAttribute.AttributeClass!, mapToAttributeSymbol))
 						{
-							this.Targets.Add((typeSymbol, (INamedTypeSymbol)typeAttribute.ConstructorArguments[0].Value!, syntaxNode));
+							this.Targets.Add((typeSymbol, (INamedTypeSymbol)typeAttribute.ConstructorArguments[0].Value!, 
+								syntaxNode, (ContainingNamespaceKind)typeAttribute.ConstructorArguments[1].Value!));
 						}
 						else if (SymbolEqualityComparer.Default.Equals(typeAttribute.AttributeClass!, mapFromAttributeSymbol))
 						{
-							this.Targets.Add(((INamedTypeSymbol)typeAttribute.ConstructorArguments[0].Value!, typeSymbol, syntaxNode));
+							this.Targets.Add(((INamedTypeSymbol)typeAttribute.ConstructorArguments[0].Value!, typeSymbol, 
+								syntaxNode, (ContainingNamespaceKind)typeAttribute.ConstructorArguments[1].Value!));
 						}
 					}
 				}
@@ -47,7 +49,8 @@ namespace InlineMapping
 						_ => _.ApplicationSyntaxReference!.GetSyntax() == syntaxNode);
 					var sourceType = (INamedTypeSymbol)attributeData.ConstructorArguments[0].Value!;
 					var destinationType = (INamedTypeSymbol)attributeData.ConstructorArguments[1].Value!;
-					this.Targets.Add((sourceType, destinationType, syntaxNode));
+					this.Targets.Add((sourceType, destinationType, syntaxNode, 
+						(ContainingNamespaceKind)attributeData.ConstructorArguments[2].Value!));
 				}
 			}
 		}

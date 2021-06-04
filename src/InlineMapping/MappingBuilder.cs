@@ -21,11 +21,14 @@ namespace InlineMapping
 			using var indentWriter = new IndentedTextWriter(writer, 
 				configurationValues.IndentStyle == IndentStyle.Tab ? "\t" : new string(' ', (int)configurationValues.IndentSize));
 
+			var namespaces = new NamespaceGatherer();
+
 			var usingStatements = new SortedSet<string>();
 
 			if (!source.IsValueType)
 			{
 				usingStatements.Add("using System;");
+				namespaces.Add(typeof(Type));
 			};
 
 			if (!destination.ContainingNamespace.IsGlobalNamespace &&
@@ -33,6 +36,7 @@ namespace InlineMapping
 					destination.ContainingNamespace.ToDisplayString(), StringComparison.InvariantCulture))
 			{
 				usingStatements.Add($"using {destination.ContainingNamespace.ToDisplayString()};");
+				namespaces.Add(destination.ContainingNamespace);
 			}
 
 			foreach (var usingStatement in usingStatements)
@@ -45,6 +49,10 @@ namespace InlineMapping
 				indentWriter.WriteLine();
 			}
 
+			// TODO: I need to create a ContainingNamespaceKind that all the Map attributes can provide
+			// on construction. It's optional and should default to Source.
+			// If it's Source or Destination, then look at the source's or the destination's namespace.
+			// If it's Global, do nothing.
 			if (!source.ContainingNamespace.IsGlobalNamespace)
 			{
 				indentWriter.WriteLine($"namespace {source.ContainingNamespace.ToDisplayString()}");
