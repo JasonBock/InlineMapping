@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -27,49 +26,46 @@ namespace InlineMapping
 
 			var namespaces = new NamespaceGatherer();
 
-			if (!destination.ContainingNamespace.IsGlobalNamespace &&
-				!source.ContainingNamespace.ToDisplayString().StartsWith(
-					destination.ContainingNamespace.ToDisplayString(), StringComparison.InvariantCulture))
+			if (kind != ContainingNamespaceKind.Global)
 			{
+				if (kind == ContainingNamespaceKind.Source)
+				{
+					if (source.ContainingNamespace.IsGlobalNamespace ||
+						!source.ContainingNamespace.Contains(destination.ContainingNamespace))
+					{
+						namespaces.Add(destination.ContainingNamespace);
+					}
+
+					if(!source.ContainingNamespace.IsGlobalNamespace)
+					{
+						indentWriter.WriteLine($"namespace {source.ContainingNamespace.ToDisplayString()}");
+						indentWriter.WriteLine("{");
+						indentWriter.Indent++;
+					}
+				}
+				else if (kind == ContainingNamespaceKind.Destination)
+				{
+					if (destination.ContainingNamespace.IsGlobalNamespace ||
+						!destination.ContainingNamespace.Contains(source.ContainingNamespace))
+					{
+						namespaces.Add(source.ContainingNamespace);
+					}
+
+					if(!destination.ContainingNamespace.IsGlobalNamespace)
+					{
+						indentWriter.WriteLine($"namespace {destination.ContainingNamespace.ToDisplayString()}");
+						indentWriter.WriteLine("{");
+						indentWriter.Indent++;
+					}
+				}
+			}
+			else
+			{
+				namespaces.Add(source.ContainingNamespace);
 				namespaces.Add(destination.ContainingNamespace);
 			}
 
-			if (kind != ContainingNamespaceKind.Global)
-			{
-				if (kind == ContainingNamespaceKind.Source && !source.ContainingNamespace.IsGlobalNamespace)
-				{
-					indentWriter.WriteLine($"namespace {source.ContainingNamespace.ToDisplayString()}");
-					indentWriter.WriteLine("{");
-					indentWriter.Indent++;
-				}
-				else if (kind == ContainingNamespaceKind.Destination && !destination.ContainingNamespace.IsGlobalNamespace)
-				{
-					indentWriter.WriteLine($"namespace {destination.ContainingNamespace.ToDisplayString()}");
-					indentWriter.WriteLine("{");
-					indentWriter.Indent++;
-				}
-			}
-
-			indentWriter.WriteLine($"public static partial class {source.Name}MapToExtensions");
-			indentWriter.WriteLine("{");
-			indentWriter.Indent++;
-
-			var constructors = destination.Constructors.Where(_ => _.DeclaredAccessibility == Accessibility.Public ||
-				destination.ContainingAssembly.ExposesInternalsTo(compilation.Assembly) && _.DeclaredAccessibility == Accessibility.Friend).ToArray();
-
-			for(var i = 0; i < constructors.Length; i++)
-			{
-				var constructor = constructors[i];
-				MappingBuilder.BuildMapExtensionMethod(source, destination, maps, constructor, namespaces, indentWriter);
-
-				if(i < constructors.Length - 1)
-				{
-					indentWriter.WriteLine();
-				}
-			}
-
-			indentWriter.Indent--;
-			indentWriter.WriteLine("};");
+			MappingBuilder.BuildType(source, destination, maps, compilation, indentWriter, namespaces);
 
 			if (!source.IsValueType)
 			{
@@ -96,6 +92,30 @@ namespace InlineMapping
 			return SourceText.From(code, Encoding.UTF8);
 		}
 
+		private static void BuildType(INamedTypeSymbol source, INamedTypeSymbol destination, ImmutableArray<string> maps, Compilation compilation, IndentedTextWriter indentWriter, NamespaceGatherer namespaces)
+		{
+			indentWriter.WriteLine($"public static partial class {source.Name}MapToExtensions");
+			indentWriter.WriteLine("{");
+			indentWriter.Indent++;
+
+			var constructors = destination.Constructors.Where(_ => _.DeclaredAccessibility == Accessibility.Public ||
+				destination.ContainingAssembly.ExposesInternalsTo(compilation.Assembly) && _.DeclaredAccessibility == Accessibility.Friend).ToArray();
+
+			for (var i = 0; i < constructors.Length; i++)
+			{
+				var constructor = constructors[i];
+				MappingBuilder.BuildMapExtensionMethod(source, destination, maps, constructor, namespaces, indentWriter);
+
+				if (i < constructors.Length - 1)
+				{
+					indentWriter.WriteLine();
+				}
+			}
+
+			indentWriter.Indent--;
+			indentWriter.WriteLine("};");
+		}
+
 		private static void BuildMapExtensionMethod(ITypeSymbol source, ITypeSymbol destination, ImmutableArray<string> maps, 
 			IMethodSymbol constructor, NamespaceGatherer namespaces, IndentedTextWriter indentWriter)
 		{
@@ -108,7 +128,7 @@ namespace InlineMapping
 				namespaces.Add(parameter.Type.ContainingNamespace);
 				var nullableAnnotation = parameter.NullableAnnotation == NullableAnnotation.Annotated ? "?" : string.Empty;
 				var optionalValue = parameter.HasExplicitDefaultValue ? $" = {parameter.ExplicitDefaultValue.GetDefaultValue()}" : string.Empty;
-				parameters[i + 1] = $"{parameter.Type.Name}{nullableAnnotation} {parameter.Name}{optionalValue}";
+				parameters[i + 1] = $"{parameter.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)}{nullableAnnotation} {parameter.Name}{optionalValue}";
 			}
 
 			indentWriter.WriteLine($"public static {destination.Name} MapTo{destination.Name}({string.Join(", ", parameters)}) =>");
@@ -121,7 +141,16 @@ namespace InlineMapping
 				indentWriter.Indent++;
 			}
 
-			indentWriter.WriteLine($"new {destination.Name}");
+			if(constructor.Parameters.Length == 0)
+			{
+				indentWriter.WriteLine($"new {destination.Name}");
+			}
+			else
+			{
+				indentWriter.WriteLine(
+					$"new {destination.Name}({string.Join(", ", constructor.Parameters.Select(_ => _.Name))})");
+			}
+
 			indentWriter.WriteLine("{");
 			indentWriter.Indent++;
 

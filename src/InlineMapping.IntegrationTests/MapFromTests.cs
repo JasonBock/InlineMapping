@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System;
 
 namespace InlineMapping.IntegrationTests
 {
@@ -12,6 +13,15 @@ namespace InlineMapping.IntegrationTests
 
 			Assert.That(destination.Id, Is.EqualTo(source.Id));
 		}
+
+		[Test]
+		public static void MapWithCustomConstructor()
+		{
+			var source = new SourceForMapFrom { Id = 3 };
+			var destination = source.MapToDestinationForMapFromWithCustomConstructor("a", Guid.NewGuid());
+
+			Assert.That(destination.Id, Is.EqualTo(source.Id));
+		}
 	}
 
 	public class SourceForMapFrom
@@ -22,6 +32,14 @@ namespace InlineMapping.IntegrationTests
 	[MapFrom(typeof(SourceForMapFrom))]
 	public class DestinationForMapFrom
 	{
+		public int Id { get; set; }
+	}
+
+	[MapFrom(typeof(SourceForMapFrom))]
+	public class DestinationForMapFromWithCustomConstructor
+	{
+		public DestinationForMapFromWithCustomConstructor(string a, Guid b) { }
+
 		public int Id { get; set; }
 	}
 }

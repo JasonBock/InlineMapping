@@ -2,8 +2,8 @@
 {
 	public enum ContainingNamespaceKind
 	{
-		Source, 
-		Destination, 
+		Source,
+		Destination,
 		Global
 	}
 }

@@ -481,6 +481,41 @@ public class Source
 			});
 		}
 
+		// GenerateWithConstructorParameters
+
+		[Test]
+		public static void GenerateWhenDestinationNamespaceIsSelected()
+		{
+			var (diagnostics, output) = MapGeneratorMapTests.GetGeneratedOutput(
+@"using InlineMapping;
+
+[assembly: Map(typeof(SourceNamespace.Source), typeof(DestinationNamespace.Destination), ContainingNamespaceKind.Destination)]
+
+namespace DestinationNamespace
+{
+	public class Destination 
+	{ 
+		public string Id { get; set; }
+	}
+}
+
+namespace SourceNamespace
+{
+	public class Source 
+	{ 
+		public string Id { get; set; }
+	}
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(0));
+				Assert.That(output, Does.Contain("namespace DestinationNamespace"));
+				Assert.That(output, Does.Contain("using SourceNamespace;"));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
+
 		private static (ImmutableArray<Diagnostic>, string) GetGeneratedOutput(string source)
 		{
 			var syntaxTree = CSharpSyntaxTree.ParseText(source);

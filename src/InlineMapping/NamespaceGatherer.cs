@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 
 namespace InlineMapping
 {
@@ -12,14 +11,29 @@ namespace InlineMapping
 		private readonly ImmutableHashSet<string>.Builder builder =
 			ImmutableHashSet.CreateBuilder<string>();
 
-		public void Add(INamespaceSymbol @namespace) =>
-			this.builder.Add(@namespace.GetName());
+		public void Add(INamespaceSymbol @namespace)
+		{
+			if(!@namespace.IsGlobalNamespace)
+			{
+				this.builder.Add(@namespace.GetName());
+			}
+		}
 
-		public void Add(Type type) =>
-			this.builder.Add(type.Namespace);
+		public void Add(Type type)
+		{
+			if(!string.IsNullOrWhiteSpace(type.Namespace))
+			{
+				this.builder.Add(type.Namespace);
+			}
+		}
 
-		public void AddRange(IEnumerable<INamespaceSymbol> namespaces) =>
-			this.builder.AddRange(namespaces.Select(_ => _.GetName()));
+		public void AddRange(IEnumerable<INamespaceSymbol> namespaces)
+		{
+			foreach(var @namespace in namespaces)
+			{
+				this.Add(@namespace);
+			}
+		}
 
 		public ImmutableHashSet<string> Values => this.builder.ToImmutable();
 	}
