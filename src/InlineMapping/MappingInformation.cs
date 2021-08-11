@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Linq;
 using Maps = System.Collections.Immutable.ImmutableDictionary<(Microsoft.CodeAnalysis.INamedTypeSymbol source, Microsoft.CodeAnalysis.INamedTypeSymbol destination),
-	(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> diagnostics, Microsoft.CodeAnalysis.SyntaxNode node, System.Collections.Immutable.ImmutableArray<string> maps, InlineMapping.ContainingNamespaceKind kind)>;
+	(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> diagnostics, Microsoft.CodeAnalysis.SyntaxNode node, System.Collections.Immutable.ImmutableArray<string> propertyNames, InlineMapping.ContainingNamespaceKind kind)>;
 
 namespace InlineMapping
 {
@@ -35,7 +35,7 @@ namespace InlineMapping
 			{
 				var diagnostics = maps[key].diagnostics.ToList();
 				diagnostics.Add(DuplicatedAttributeDiagnostic.Create(currentNode, maps[key].node));
-				maps[key] = (diagnostics.ToImmutableArray(), maps[key].node, maps[key].maps, kind);
+				maps[key] = (diagnostics.ToImmutableArray(), maps[key].node, maps[key].propertyNames, kind);
 			}
 			else
 			{
@@ -47,7 +47,7 @@ namespace InlineMapping
 					diagnostics.Add(NoAccessibleConstructorsDiagnostic.Create(currentNode));
 				}
 
-				var propertyMaps = ImmutableArray.CreateBuilder<string>();
+				var propertyNames = ImmutableArray.CreateBuilder<string>();
 
 				var destinationProperties = destination.GetMembers().OfType<IPropertySymbol>()
 					.Where(_ => _.SetMethod is not null &&
@@ -68,7 +68,7 @@ namespace InlineMapping
 
 					if (destinationProperty is not null)
 					{
-						propertyMaps.Add($"{destinationProperty.Name} = self.{sourceProperty.Name},");
+						propertyNames.Add(destinationProperty.Name);
 						destinationProperties.Remove(destinationProperty);
 					}
 					else
@@ -82,12 +82,12 @@ namespace InlineMapping
 					diagnostics.Add(NoMatchDiagnostic.Create(remainingDestinationProperty, "destination", destination));
 				}
 
-				if (propertyMaps.Count == 0)
+				if (propertyNames.Count == 0)
 				{
 					diagnostics.Add(NoPropertyMapsFoundDiagnostic.Create(currentNode));
 				}
 
-				maps.Add((source, destination), (diagnostics.ToImmutable(), currentNode, propertyMaps.ToImmutable(), kind));
+				maps.Add((source, destination), (diagnostics.ToImmutable(), currentNode, propertyNames.ToImmutable(), kind));
 			}
 		}
 

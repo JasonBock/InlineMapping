@@ -1,45 +1,42 @@
 ﻿using NUnit.Framework;
-using System;
 
 namespace InlineMapping.IntegrationTests
 {
 	public static class MapToTests
 	{
 		[Test]
-		public static void Map()
+		public static void MapWithClass()
 		{
-			var source = new SourceForMapTo { Id = 3 };
+			var source = new SourceClassForMapTo { Id = 3 };
 			var destination = source.MapToDestinationForMapTo();
 
 			Assert.That(destination.Id, Is.EqualTo(source.Id));
 		}
 
 		[Test]
-		public static void MapWithCustomConstuctor()
+		public static void MapWithStruct()
 		{
-			var source = new SourceForMapTo { Id = 3 };
-			var destination = source.MapToDestinationForMapToWithCustomConstructor("a", Guid.NewGuid());
+			var source = new SourceStructForMapTo { Id = 3 };
+			var destination = source.MapToDestinationForMapTo();
 
 			Assert.That(destination.Id, Is.EqualTo(source.Id));
 		}
 	}
 
 	[MapTo(typeof(DestinationForMapTo))]
-	[MapTo(typeof(DestinationForMapToWithCustomConstructor))]
-	public class SourceForMapTo
+	public sealed class SourceClassForMapTo
+	{
+		public int Id { get; set; }
+	}
+
+	[MapTo(typeof(DestinationForMapTo))]
+	public struct SourceStructForMapTo
 	{
 		public int Id { get; set; }
 	}
 
 	public class DestinationForMapTo
 	{
-		public int Id { get; set; }
-	}
-
-	public class DestinationForMapToWithCustomConstructor
-	{
-		public DestinationForMapToWithCustomConstructor(string a, Guid b) { }
-
 		public int Id { get; set; }
 	}
 }

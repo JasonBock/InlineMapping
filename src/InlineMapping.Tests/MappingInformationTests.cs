@@ -37,7 +37,7 @@ public class Destination
 				Assert.That(key.destination.Name, Is.EqualTo("Destination"));
 				Assert.That(value.diagnostics.Length, Is.EqualTo(0));
 				Assert.That(value.node, Is.Not.Null);
-				Assert.That(value.maps.Length, Is.EqualTo(1));
+				Assert.That(value.propertyNames.Length, Is.EqualTo(1));
 			});
 		}
 
@@ -70,7 +70,7 @@ public class Destination
 				Assert.That(value.diagnostics.Length, Is.EqualTo(1));
 				Assert.That(value.diagnostics[0].Id, Is.EqualTo(DuplicatedAttributeDiagnostic.Id));
 				Assert.That(value.node, Is.Not.Null);
-				Assert.That(value.maps.Length, Is.EqualTo(1));
+				Assert.That(value.propertyNames.Length, Is.EqualTo(1));
 			});
 		}
 
@@ -104,7 +104,7 @@ public class Destination
 				Assert.That(value.diagnostics.Length, Is.EqualTo(1));
 				Assert.That(value.diagnostics[0].Id, Is.EqualTo(NoAccessibleConstructorsDiagnostic.Id));
 				Assert.That(value.node, Is.Not.Null);
-				Assert.That(value.maps.Length, Is.EqualTo(1));
+				Assert.That(value.propertyNames.Length, Is.EqualTo(1));
 			});
 		}
 
@@ -137,7 +137,7 @@ public class Destination
 				Assert.That(value.diagnostics.Length, Is.EqualTo(1));
 				Assert.That(value.diagnostics[0].Id, Is.EqualTo(NoMatchDiagnostic.Id));
 				Assert.That(value.node, Is.Not.Null);
-				Assert.That(value.maps.Length, Is.EqualTo(1));
+				Assert.That(value.propertyNames.Length, Is.EqualTo(1));
 			});
 		}
 
@@ -170,7 +170,7 @@ public class Destination
 				Assert.That(value.diagnostics.Length, Is.EqualTo(1));
 				Assert.That(value.diagnostics[0].Id, Is.EqualTo(NoMatchDiagnostic.Id));
 				Assert.That(value.node, Is.Not.Null);
-				Assert.That(value.maps.Length, Is.EqualTo(1));
+				Assert.That(value.propertyNames.Length, Is.EqualTo(1));
 			});
 		}
 
@@ -203,7 +203,7 @@ public class Destination
 				Assert.That(value.diagnostics.Count(_ => _.Id == NoMatchDiagnostic.Id), Is.EqualTo(2));
 				Assert.That(value.diagnostics.Count(_ => _.Id == NoPropertyMapsFoundDiagnostic.Id), Is.EqualTo(1));
 				Assert.That(value.node, Is.Not.Null);
-				Assert.That(value.maps.Length, Is.EqualTo(0));
+				Assert.That(value.propertyNames.Length, Is.EqualTo(0));
 			});
 		}
 
