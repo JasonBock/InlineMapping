@@ -11,18 +11,34 @@ namespace InlineMapping.Tests
 			Assert.Multiple(() =>
 			{
 				Assert.That(attribute.Source, Is.EqualTo(typeof(MapFromAttributeTests)));
-				Assert.That(attribute.Kind, Is.EqualTo(ContainingNamespaceKind.Source));
+				Assert.That(attribute.ContainingNamespaceKind, Is.EqualTo(ContainingNamespaceKind.Source));
+				Assert.That(attribute.MatchingPropertyTypeKind, Is.EqualTo(MatchingPropertyTypeKind.SubType));
 			});
 		}
 
 		[Test]
 		public static void CreateWithGlobalKind()
 		{
-			var attribute = new MapFromAttribute(typeof(MapFromAttributeTests), ContainingNamespaceKind.Global);
+			var attribute = new MapFromAttribute(typeof(MapFromAttributeTests), 
+				containingNamespaceKind: ContainingNamespaceKind.Global);
 			Assert.Multiple(() =>
 			{
 				Assert.That(attribute.Source, Is.EqualTo(typeof(MapFromAttributeTests)));
-				Assert.That(attribute.Kind, Is.EqualTo(ContainingNamespaceKind.Global));
+				Assert.That(attribute.ContainingNamespaceKind, Is.EqualTo(ContainingNamespaceKind.Global));
+				Assert.That(attribute.MatchingPropertyTypeKind, Is.EqualTo(MatchingPropertyTypeKind.SubType));
+			});
+		}
+
+		[Test]
+		public static void CreateWithExactMatchingType()
+		{
+			var attribute = new MapFromAttribute(typeof(MapFromAttributeTests),
+				matchingPropertyTypeKind: MatchingPropertyTypeKind.Exact);
+			Assert.Multiple(() =>
+			{
+				Assert.That(attribute.Source, Is.EqualTo(typeof(MapFromAttributeTests)));
+				Assert.That(attribute.ContainingNamespaceKind, Is.EqualTo(ContainingNamespaceKind.Source));
+				Assert.That(attribute.MatchingPropertyTypeKind, Is.EqualTo(MatchingPropertyTypeKind.Exact));
 			});
 		}
 	}
