@@ -8,7 +8,8 @@ namespace InlineMapping
 	internal sealed class MapReceiver
 		: ISyntaxContextReceiver
 	{
-		public List<(INamedTypeSymbol source, INamedTypeSymbol destination, SyntaxNode origination, ContainingNamespaceKind kind)> Targets { get; } = new();
+		public List<(INamedTypeSymbol source, INamedTypeSymbol destination, 
+			SyntaxNode origination, ContainingNamespaceKind containingNamespaceKind, MatchingPropertyTypeKind matchingPropertyTypeKind)> Targets { get; } = new();
 
 		public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
 		{
@@ -28,12 +29,14 @@ namespace InlineMapping
 						if (SymbolEqualityComparer.Default.Equals(typeAttribute.AttributeClass!, mapToAttributeSymbol))
 						{
 							this.Targets.Add((typeSymbol, (INamedTypeSymbol)typeAttribute.ConstructorArguments[0].Value!, 
-								syntaxNode, (ContainingNamespaceKind)typeAttribute.ConstructorArguments[1].Value!));
+								syntaxNode, (ContainingNamespaceKind)typeAttribute.ConstructorArguments[1].Value!,
+								(MatchingPropertyTypeKind)typeAttribute.ConstructorArguments[2].Value!));
 						}
 						else if (SymbolEqualityComparer.Default.Equals(typeAttribute.AttributeClass!, mapFromAttributeSymbol))
 						{
 							this.Targets.Add(((INamedTypeSymbol)typeAttribute.ConstructorArguments[0].Value!, typeSymbol, 
-								syntaxNode, (ContainingNamespaceKind)typeAttribute.ConstructorArguments[1].Value!));
+								syntaxNode, (ContainingNamespaceKind)typeAttribute.ConstructorArguments[1].Value!,
+								(MatchingPropertyTypeKind)typeAttribute.ConstructorArguments[2].Value!));
 						}
 					}
 				}
@@ -50,7 +53,8 @@ namespace InlineMapping
 					var sourceType = (INamedTypeSymbol)attributeData.ConstructorArguments[0].Value!;
 					var destinationType = (INamedTypeSymbol)attributeData.ConstructorArguments[1].Value!;
 					this.Targets.Add((sourceType, destinationType, syntaxNode, 
-						(ContainingNamespaceKind)attributeData.ConstructorArguments[2].Value!));
+						(ContainingNamespaceKind)attributeData.ConstructorArguments[2].Value!,
+						(MatchingPropertyTypeKind)attributeData.ConstructorArguments[3].Value!));
 				}
 			}
 		}

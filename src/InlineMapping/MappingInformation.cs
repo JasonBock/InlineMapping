@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Linq;
 using Maps = System.Collections.Immutable.ImmutableDictionary<(Microsoft.CodeAnalysis.INamedTypeSymbol source, Microsoft.CodeAnalysis.INamedTypeSymbol destination),
-	(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> diagnostics, Microsoft.CodeAnalysis.SyntaxNode node, System.Collections.Immutable.ImmutableArray<string> propertyNames, InlineMapping.ContainingNamespaceKind kind)>;
+	(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> diagnostics, Microsoft.CodeAnalysis.SyntaxNode node, System.Collections.Immutable.ImmutableArray<string> propertyNames, InlineMapping.ContainingNamespaceKind containingNamespaceKind, InlineMapping.MatchingPropertyTypeKind matchingPropertyTypeKind)>;
 
 namespace InlineMapping
 {
@@ -16,18 +16,18 @@ namespace InlineMapping
 		private static Maps Validate(MapReceiver receiver, Compilation compilation)
 		{
 			var maps = ImmutableDictionary.CreateBuilder<
-				(INamedTypeSymbol, INamedTypeSymbol), (ImmutableArray<Diagnostic>, SyntaxNode, ImmutableArray<string>, ContainingNamespaceKind)>();
+				(INamedTypeSymbol, INamedTypeSymbol), (ImmutableArray<Diagnostic>, SyntaxNode, ImmutableArray<string>, ContainingNamespaceKind, MatchingPropertyTypeKind)>();
 
-			foreach(var (source, destination, origination, kind) in receiver.Targets)
+			foreach(var (source, destination, origination, containingNamespaceKind, matchingPropertyTypeKind) in receiver.Targets)
 			{
-				MappingInformation.ValidatePairs(origination, source, destination, maps, kind, compilation);
+				MappingInformation.ValidatePairs(origination, source, destination, maps, containingNamespaceKind, matchingPropertyTypeKind, compilation);
 			}
 
 			return maps.ToImmutable();
 		}
 
 		private static void ValidatePairs(SyntaxNode currentNode, INamedTypeSymbol source, INamedTypeSymbol destination,
-			Maps.Builder maps, ContainingNamespaceKind kind, Compilation compilation)
+			Maps.Builder maps, ContainingNamespaceKind containingNamespaceKind, MatchingPropertyTypeKind matchingPropertyTypeKind, Compilation compilation)
 		{
 			var key = (source, destination);
 
@@ -35,7 +35,7 @@ namespace InlineMapping
 			{
 				var diagnostics = maps[key].diagnostics.ToList();
 				diagnostics.Add(DuplicatedAttributeDiagnostic.Create(currentNode, maps[key].node));
-				maps[key] = (diagnostics.ToImmutableArray(), maps[key].node, maps[key].propertyNames, kind);
+				maps[key] = (diagnostics.ToImmutableArray(), maps[key].node, maps[key].propertyNames, containingNamespaceKind, matchingPropertyTypeKind);
 			}
 			else
 			{
@@ -87,7 +87,8 @@ namespace InlineMapping
 					diagnostics.Add(NoPropertyMapsFoundDiagnostic.Create(currentNode));
 				}
 
-				maps.Add((source, destination), (diagnostics.ToImmutable(), currentNode, propertyNames.ToImmutable(), kind));
+				maps.Add((source, destination), (diagnostics.ToImmutable(), currentNode, propertyNames.ToImmutable(), 
+					containingNamespaceKind, matchingPropertyTypeKind));
 			}
 		}
 

@@ -14,11 +14,11 @@ namespace InlineMapping
 	internal sealed class MappingBuilder
 	{
 		public MappingBuilder(INamedTypeSymbol source, INamedTypeSymbol destination, ImmutableArray<string> propertyNames,
-			ContainingNamespaceKind kind, Compilation compilation, ConfigurationValues configurationValues) =>
-			this.Text = MappingBuilder.Build(source, destination, propertyNames, kind, compilation, configurationValues);
+			MappingContext context, Compilation compilation, ConfigurationValues configurationValues) =>
+			this.Text = MappingBuilder.Build(source, destination, propertyNames, context, compilation, configurationValues);
 
 		private static SourceText Build(INamedTypeSymbol source, INamedTypeSymbol destination, ImmutableArray<string> propertyNames,
-			ContainingNamespaceKind kind, Compilation compilation, ConfigurationValues configurationValues)
+			MappingContext context, Compilation compilation, ConfigurationValues configurationValues)
 		{
 			using var writer = new StringWriter();
 			using var indentWriter = new IndentedTextWriter(writer,
@@ -27,9 +27,9 @@ namespace InlineMapping
 			var namespaces = new NamespaceGatherer();
 			var emittedNamespace = false;
 
-			if (kind != ContainingNamespaceKind.Global)
+			if (context.ContainingNamespaceKind != ContainingNamespaceKind.Global)
 			{
-				if (kind == ContainingNamespaceKind.Source)
+				if (context.ContainingNamespaceKind == ContainingNamespaceKind.Source)
 				{
 					if (source.ContainingNamespace.IsGlobalNamespace ||
 						!source.ContainingNamespace.Contains(destination.ContainingNamespace))
@@ -45,7 +45,7 @@ namespace InlineMapping
 						emittedNamespace = true;
 					}
 				}
-				else if (kind == ContainingNamespaceKind.Destination)
+				else if (context.ContainingNamespaceKind == ContainingNamespaceKind.Destination)
 				{
 					if (destination.ContainingNamespace.IsGlobalNamespace ||
 						!destination.ContainingNamespace.Contains(source.ContainingNamespace))
