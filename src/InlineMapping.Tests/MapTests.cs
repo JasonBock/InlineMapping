@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Collections.Immutable;
 using System;
 using System.Linq;
+using InlineMapping.Descriptors;
 
 namespace InlineMapping.Tests
 {
@@ -87,6 +88,115 @@ public class Destination
 				Assert.That(output, Does.Contain("using System;"));
 				Assert.That(output, Does.Contain("public static Destination MapToDestination(this Source self) =>"));
 				Assert.That(output, Does.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
+
+		[Test]
+		public static void MapWithMatchingPropertyTypeKindAsExactAndTypesAreExact()
+		{
+			var (diagnostics, output) = MapTests.GetGeneratedOutput(
+@"using InlineMapping;
+
+[assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Exact)]
+
+public class Destination 
+{ 
+	public string Id { get; set; }
+}
+
+public class Source 
+{ 
+	public string Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(0));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
+
+		[Test]
+		public static void MapWithMatchingPropertyTypeKindAsImplicitAndTypesAreExact()
+		{
+			var (diagnostics, output) = MapTests.GetGeneratedOutput(
+@"using InlineMapping;
+
+[assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Implicit)]
+
+public class Destination 
+{ 
+	public string Id { get; set; }
+}
+
+public class Source 
+{ 
+	public string Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(0));
+				Assert.That(output, Does.Contain("Id = self.Id,"));
+			});
+		}
+
+		[Test]
+		public static void MapWithMatchingPropertyTypeKindAsExactAndTypesAreImplicit()
+		{
+			var (diagnostics, output) = MapTests.GetGeneratedOutput(
+@"using InlineMapping;
+
+[assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Exact)]
+
+public class A { }
+
+public class B : A { }
+
+public class Destination 
+{ 
+	public A Id { get; set; }
+}
+
+public class Source 
+{ 
+	public B Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.GreaterThan(0));
+				Assert.That(diagnostics.Any(_ => _.Id == NoPropertyMapsFoundDiagnostic.Id), Is.True);
+				Assert.That(output, Is.EqualTo(string.Empty));
+			});
+		}
+
+		[Test]
+		public static void MapWithMatchingPropertyTypeKindAsImplicitAndTypesAreImplicit()
+		{
+			var (diagnostics, output) = MapTests.GetGeneratedOutput(
+@"using InlineMapping;
+
+[assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Implicit)]
+
+public class A { }
+
+public class B : A { }
+
+public class Destination 
+{ 
+	public A Id { get; set; }
+}
+
+public class Source 
+{ 
+	public B Id { get; set; }
+}");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(diagnostics.Length, Is.EqualTo(0));
 				Assert.That(output, Does.Contain("Id = self.Id,"));
 			});
 		}
