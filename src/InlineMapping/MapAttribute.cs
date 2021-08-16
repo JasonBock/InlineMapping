@@ -8,7 +8,7 @@ namespace InlineMapping
 	{
 		public MapAttribute(Type source, Type destination, 
 			ContainingNamespaceKind containingNamespaceKind = ContainingNamespaceKind.Source,
-			MatchingPropertyTypeKind matchingPropertyTypeKind = MatchingPropertyTypeKind.SubType) =>
+			MatchingPropertyTypeKind matchingPropertyTypeKind = MatchingPropertyTypeKind.Implicit) =>
 			(this.Source, this.Destination, this.ContainingNamespaceKind, this.MatchingPropertyTypeKind) = 
 				(source, destination, containingNamespaceKind, matchingPropertyTypeKind);
 

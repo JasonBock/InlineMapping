@@ -2,7 +2,7 @@
 {
 	public enum MatchingPropertyTypeKind
 	{
-		SubType, 
+		Implicit, 
 		Exact
 	}
 }

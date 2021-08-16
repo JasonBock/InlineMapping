@@ -14,7 +14,7 @@ namespace InlineMapping.Tests
 				Assert.That(attribute.Source, Is.EqualTo(typeof(MapFromAttributeTests)));
 				Assert.That(attribute.Destination, Is.EqualTo(typeof(MapToAttributeTests)));
 				Assert.That(attribute.ContainingNamespaceKind, Is.EqualTo(ContainingNamespaceKind.Source));
-				Assert.That(attribute.MatchingPropertyTypeKind, Is.EqualTo(MatchingPropertyTypeKind.SubType));
+				Assert.That(attribute.MatchingPropertyTypeKind, Is.EqualTo(MatchingPropertyTypeKind.Implicit));
 			});
 		}
 
@@ -29,7 +29,7 @@ namespace InlineMapping.Tests
 				Assert.That(attribute.Source, Is.EqualTo(typeof(MapFromAttributeTests)));
 				Assert.That(attribute.Destination, Is.EqualTo(typeof(MapToAttributeTests)));
 				Assert.That(attribute.ContainingNamespaceKind, Is.EqualTo(ContainingNamespaceKind.Global));
-				Assert.That(attribute.MatchingPropertyTypeKind, Is.EqualTo(MatchingPropertyTypeKind.SubType));
+				Assert.That(attribute.MatchingPropertyTypeKind, Is.EqualTo(MatchingPropertyTypeKind.Implicit));
 			});
 		}
 

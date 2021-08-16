@@ -1,10 +1,11 @@
 ﻿using InlineMapping.Descriptors;
 using InlineMapping.Extensions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 using System.Linq;
 using Maps = System.Collections.Immutable.ImmutableDictionary<(Microsoft.CodeAnalysis.INamedTypeSymbol source, Microsoft.CodeAnalysis.INamedTypeSymbol destination),
-	(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> diagnostics, Microsoft.CodeAnalysis.SyntaxNode node, System.Collections.Immutable.ImmutableArray<string> propertyNames, InlineMapping.ContainingNamespaceKind containingNamespaceKind, InlineMapping.MatchingPropertyTypeKind matchingPropertyTypeKind)>;
+	(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> diagnostics, Microsoft.CodeAnalysis.SyntaxNode node, System.Collections.Immutable.ImmutableArray<string> propertyNames, InlineMapping.MappingContext context)>;
 
 namespace InlineMapping
 {
@@ -16,18 +17,18 @@ namespace InlineMapping
 		private static Maps Validate(MapReceiver receiver, Compilation compilation)
 		{
 			var maps = ImmutableDictionary.CreateBuilder<
-				(INamedTypeSymbol, INamedTypeSymbol), (ImmutableArray<Diagnostic>, SyntaxNode, ImmutableArray<string>, ContainingNamespaceKind, MatchingPropertyTypeKind)>();
+				(INamedTypeSymbol, INamedTypeSymbol), (ImmutableArray<Diagnostic>, SyntaxNode, ImmutableArray<string>, MappingContext)>();
 
-			foreach(var (source, destination, origination, containingNamespaceKind, matchingPropertyTypeKind) in receiver.Targets)
+			foreach(var (source, destination, origination, context) in receiver.Targets)
 			{
-				MappingInformation.ValidatePairs(origination, source, destination, maps, containingNamespaceKind, matchingPropertyTypeKind, compilation);
+				MappingInformation.ValidatePairs(origination, source, destination, maps, context, compilation);
 			}
 
 			return maps.ToImmutable();
 		}
 
 		private static void ValidatePairs(SyntaxNode currentNode, INamedTypeSymbol source, INamedTypeSymbol destination,
-			Maps.Builder maps, ContainingNamespaceKind containingNamespaceKind, MatchingPropertyTypeKind matchingPropertyTypeKind, Compilation compilation)
+			Maps.Builder maps, MappingContext context, Compilation compilation)
 		{
 			var key = (source, destination);
 
@@ -35,7 +36,7 @@ namespace InlineMapping
 			{
 				var diagnostics = maps[key].diagnostics.ToList();
 				diagnostics.Add(DuplicatedAttributeDiagnostic.Create(currentNode, maps[key].node));
-				maps[key] = (diagnostics.ToImmutableArray(), maps[key].node, maps[key].propertyNames, containingNamespaceKind, matchingPropertyTypeKind);
+				maps[key] = (diagnostics.ToImmutableArray(), maps[key].node, maps[key].propertyNames, context);
 			}
 			else
 			{
@@ -60,9 +61,15 @@ namespace InlineMapping
 						(_.GetMethod.DeclaredAccessibility == Accessibility.Public ||
 						(source.ContainingAssembly.ExposesInternalsTo(compilation.Assembly) && _.GetMethod.DeclaredAccessibility == Accessibility.Friend))))
 				{
+					var x = compilation.ClassifyCommonConversion(sourceProperty.Type, sourceProperty.Type);
+
 					var destinationProperty = destinationProperties.FirstOrDefault(
 						_ => _.Name == sourceProperty.Name &&
-							_.Type.Equals(sourceProperty.Type, SymbolEqualityComparer.Default) &&
+							context.MatchingPropertyTypeKind switch
+							{
+								MatchingPropertyTypeKind.Exact => _.Type.Equals(sourceProperty.Type, SymbolEqualityComparer.Default),
+								_ => compilation.ClassifyCommonConversion(sourceProperty.Type, _.Type).IsImplicit
+							} &&
 							(sourceProperty.NullableAnnotation != NullableAnnotation.Annotated ||
 								sourceProperty.NullableAnnotation == NullableAnnotation.Annotated && _.NullableAnnotation == NullableAnnotation.Annotated));
 
@@ -87,8 +94,8 @@ namespace InlineMapping
 					diagnostics.Add(NoPropertyMapsFoundDiagnostic.Create(currentNode));
 				}
 
-				maps.Add((source, destination), (diagnostics.ToImmutable(), currentNode, propertyNames.ToImmutable(), 
-					containingNamespaceKind, matchingPropertyTypeKind));
+				maps.Add((source, destination), (diagnostics.ToImmutable(), currentNode, propertyNames.ToImmutable(),
+					context));
 			}
 		}
 

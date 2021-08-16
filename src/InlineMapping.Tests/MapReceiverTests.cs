@@ -43,8 +43,10 @@ namespace InlineMapping.Tests
 			{
 				Assert.That(targetValues.source.Name, Is.EqualTo("Source"), nameof(targetValues.source));
 				Assert.That(targetValues.destination.Name, Is.EqualTo("Destination"), nameof(targetValues.destination));
-				Assert.That(targetValues.containingNamespaceKind, Is.EqualTo(ContainingNamespaceKind.Global), nameof(targetValues.containingNamespaceKind));
-				Assert.That(targetValues.matchingPropertyTypeKind, Is.EqualTo(MatchingPropertyTypeKind.Exact), nameof(targetValues.matchingPropertyTypeKind));
+				Assert.That(targetValues.context.ContainingNamespaceKind, Is.EqualTo(ContainingNamespaceKind.Global), 
+					nameof(targetValues.context.ContainingNamespaceKind));
+				Assert.That(targetValues.context.MatchingPropertyTypeKind, Is.EqualTo(MatchingPropertyTypeKind.Exact), 
+					nameof(targetValues.context.MatchingPropertyTypeKind));
 			});
 		}
 
@@ -64,8 +66,10 @@ namespace InlineMapping.Tests
 			{
 				Assert.That(targetValues.source.Name, Is.EqualTo("Source"), nameof(targetValues.source));
 				Assert.That(targetValues.destination.Name, Is.EqualTo("Destination"), nameof(targetValues.destination));
-				Assert.That(targetValues.containingNamespaceKind, Is.EqualTo(ContainingNamespaceKind.Global), nameof(targetValues.containingNamespaceKind));
-				Assert.That(targetValues.matchingPropertyTypeKind, Is.EqualTo(MatchingPropertyTypeKind.Exact), nameof(targetValues.matchingPropertyTypeKind));
+				Assert.That(targetValues.context.ContainingNamespaceKind, Is.EqualTo(ContainingNamespaceKind.Global), 
+					nameof(targetValues.context.ContainingNamespaceKind));
+				Assert.That(targetValues.context.MatchingPropertyTypeKind, Is.EqualTo(MatchingPropertyTypeKind.Exact), 
+					nameof(targetValues.context.MatchingPropertyTypeKind));
 			});
 		}
 
