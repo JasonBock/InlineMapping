@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.0" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
     <ProjectReference Include="..\InlineMapping\InlineMapping.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 </Project>

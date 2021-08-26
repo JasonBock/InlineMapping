@@ -1,19 +1,21 @@
 ﻿using InlineMapping.Descriptors;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Testing;
 using NUnit.Framework;
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace InlineMapping.Tests
 {
 	public static class MapGeneratorMapToTests
 	{
 		[Test]
-		public static void GenerateWithClasses()
+		public static async Task GenerateWithClassesAsync()
 		{
-			var (diagnostics, output) = MapGeneratorMapToTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 public class Destination 
@@ -25,23 +27,32 @@ public class Destination
 public class Source 
 { 
 	public string Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
+			var generatedCode =
+@"using System;
+
+#nullable enable
+
+public static partial class SourceMapToExtensions
+{
+	public static Destination MapToDestination(this Source self) =>
+		self is null ? throw new ArgumentNullException(nameof(self)) :
+			new Destination
 			{
-				Assert.That(diagnostics.Length, Is.EqualTo(0));
-				Assert.That(output, Does.Not.Contain("namespace"));
-				Assert.That(output, Does.Contain("using System;"));
-				Assert.That(output, Does.Contain("public static Destination MapToDestination(this Source self) =>"));
-				Assert.That(output, Does.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
-				Assert.That(output, Does.Contain("Id = self.Id,"));
-			});
+				Id = self.Id,
+			};
+}
+";
+			await TestAssistants.RunAsync(code,
+				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+				Enumerable.Empty<DiagnosticResult>());
 		}
 
 		[Test]
-		public static void GenerateWithStructs()
+		public static async Task GenerateWithStructs()
 		{
-			var (diagnostics, output) = MapGeneratorMapToTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 public struct Destination 
@@ -53,17 +64,33 @@ public struct Destination
 public struct Source 
 { 
 	public string Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
-			{
-				Assert.That(diagnostics.Length, Is.EqualTo(0));
-				Assert.That(output, Does.Not.Contain("namespace"));
-				Assert.That(output, Does.Not.Contain("using System;"));
-				Assert.That(output, Does.Contain("public static Destination MapToDestination(this Source self) =>"));
-				Assert.That(output, Does.Not.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
-				Assert.That(output, Does.Contain("Id = self.Id,"));
-			});
+			var generatedCode =
+@"#nullable enable
+
+public static partial class SourceMapToExtensions
+{
+	public static Destination MapToDestination(this Source self) =>
+		new Destination
+		{
+			Id = self.Id,
+		};
+}
+";
+			await TestAssistants.RunAsync(code,
+				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+				Enumerable.Empty<DiagnosticResult>());
+
+			//Assert.Multiple(() =>
+			//{
+			//	Assert.That(diagnostics.Length, Is.EqualTo(0));
+			//	Assert.That(output, Does.Not.Contain("namespace"));
+			//	Assert.That(output, Does.Not.Contain("using System;"));
+			//	Assert.That(output, Does.Contain("public static Destination MapToDestination(this Source self) =>"));
+			//	Assert.That(output, Does.Not.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
+			//	Assert.That(output, Does.Contain("Id = self.Id,"));
+			//});
 		}
 
 		[Test]
@@ -457,7 +484,7 @@ public class Source
 			{
 				Assert.That(diagnostics.Length, Is.EqualTo(3));
 				Assert.That(() => diagnostics.Single(_ => _.Id == NoPropertyMapsFoundDiagnostic.Id), Throws.Nothing);
-				Assert.That(() => diagnostics.Single(_ => _.Id == NoMatchDiagnostic.Id && 
+				Assert.That(() => diagnostics.Single(_ => _.Id == NoMatchDiagnostic.Id &&
 					_.GetMessage().Contains("source type Source", StringComparison.InvariantCulture)), Throws.Nothing);
 				Assert.That(() => diagnostics.Single(_ => _.Id == NoMatchDiagnostic.Id &&
 					_.GetMessage().Contains("destination type Destination", StringComparison.InvariantCulture)), Throws.Nothing);
