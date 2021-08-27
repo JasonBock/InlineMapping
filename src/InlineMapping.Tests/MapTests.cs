@@ -5,15 +5,17 @@ using System.Collections.Immutable;
 using System;
 using System.Linq;
 using InlineMapping.Descriptors;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Testing;
 
 namespace InlineMapping.Tests
 {
 	public static class MapTests
 	{
 		[Test]
-		public static void MapToSelf()
+		public static async Task MapToSelfAsync()
 		{
-			var (diagnostics, output) = MapTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Source))]
@@ -21,23 +23,33 @@ namespace InlineMapping.Tests
 public class Source 
 { 
 	public string Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
+			var generatedCode =
+@"using System;
+
+#nullable enable
+
+public static partial class SourceMapToExtensions
+{
+	public static Source MapToSource(this Source self) =>
+		self is null ? throw new ArgumentNullException(nameof(self)) :
+			new Source
 			{
-				Assert.That(diagnostics.Length, Is.EqualTo(0));
-				Assert.That(output, Does.Not.Contain("namespace"));
-				Assert.That(output, Does.Contain("using System;"));
-				Assert.That(output, Does.Contain("public static Source MapToSource(this Source self) =>"));
-				Assert.That(output, Does.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
-				Assert.That(output, Does.Contain("Id = self.Id,"));
-			});
+				Id = self.Id,
+			};
+}
+";
+
+			await TestAssistants.RunAsync(code,
+				new[] { (typeof(MapGenerator), "Source_To_Source_Map.g.cs", generatedCode) },
+				Enumerable.Empty<DiagnosticResult>());
 		}
 
 		[Test]
-		public static void MapWithSourcePropertyHavingInternalGetter()
+		public static async Task MapWithSourcePropertyHavingInternalGetterAsync()
 		{
-			var (diagnostics, output) = MapTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination))]
@@ -50,23 +62,33 @@ public class Source
 public class Destination
 { 
 	public string Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
+			var generatedCode =
+@"using System;
+
+#nullable enable
+
+public static partial class SourceMapToExtensions
+{
+	public static Destination MapToDestination(this Source self) =>
+		self is null ? throw new ArgumentNullException(nameof(self)) :
+			new Destination
 			{
-				Assert.That(diagnostics.Length, Is.EqualTo(0));
-				Assert.That(output, Does.Not.Contain("namespace"));
-				Assert.That(output, Does.Contain("using System;"));
-				Assert.That(output, Does.Contain("public static Destination MapToDestination(this Source self) =>"));
-				Assert.That(output, Does.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
-				Assert.That(output, Does.Contain("Id = self.Id,"));
-			});
+				Id = self.Id,
+			};
+}
+";
+
+			await TestAssistants.RunAsync(code,
+				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+				Enumerable.Empty<DiagnosticResult>());
 		}
 
 		[Test]
-		public static void MapWithDestinationPropertyHavingInternalSetter()
+		public static async Task MapWithDestinationPropertyHavingInternalSetterAsync()
 		{
-			var (diagnostics, output) = MapTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination))]
@@ -79,23 +101,33 @@ public class Source
 public class Destination
 { 
 	internal string Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
+			var generatedCode =
+@"using System;
+
+#nullable enable
+
+public static partial class SourceMapToExtensions
+{
+	public static Destination MapToDestination(this Source self) =>
+		self is null ? throw new ArgumentNullException(nameof(self)) :
+			new Destination
 			{
-				Assert.That(diagnostics.Length, Is.EqualTo(0));
-				Assert.That(output, Does.Not.Contain("namespace"));
-				Assert.That(output, Does.Contain("using System;"));
-				Assert.That(output, Does.Contain("public static Destination MapToDestination(this Source self) =>"));
-				Assert.That(output, Does.Contain("self is null ? throw new ArgumentNullException(nameof(self)) :"));
-				Assert.That(output, Does.Contain("Id = self.Id,"));
-			});
+				Id = self.Id,
+			};
+}
+";
+
+			await TestAssistants.RunAsync(code,
+				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+				Enumerable.Empty<DiagnosticResult>());
 		}
 
 		[Test]
-		public static void MapWithMatchingPropertyTypeKindAsExactAndTypesAreExact()
+		public static async Task MapWithMatchingPropertyTypeKindAsExactAndTypesAreExactAsync()
 		{
-			var (diagnostics, output) = MapTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Exact)]
@@ -108,19 +140,33 @@ public class Destination
 public class Source 
 { 
 	public string Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
+			var generatedCode =
+@"using System;
+
+#nullable enable
+
+public static partial class SourceMapToExtensions
+{
+	public static Destination MapToDestination(this Source self) =>
+		self is null ? throw new ArgumentNullException(nameof(self)) :
+			new Destination
 			{
-				Assert.That(diagnostics.Length, Is.EqualTo(0));
-				Assert.That(output, Does.Contain("Id = self.Id,"));
-			});
+				Id = self.Id,
+			};
+}
+";
+
+			await TestAssistants.RunAsync(code,
+				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+				Enumerable.Empty<DiagnosticResult>());
 		}
 
 		[Test]
-		public static void MapWithMatchingPropertyTypeKindAsImplicitAndTypesAreExact()
+		public static async Task MapWithMatchingPropertyTypeKindAsImplicitAndTypesAreExactAsync()
 		{
-			var (diagnostics, output) = MapTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Implicit)]
@@ -133,19 +179,33 @@ public class Destination
 public class Source 
 { 
 	public string Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
+			var generatedCode =
+@"using System;
+
+#nullable enable
+
+public static partial class SourceMapToExtensions
+{
+	public static Destination MapToDestination(this Source self) =>
+		self is null ? throw new ArgumentNullException(nameof(self)) :
+			new Destination
 			{
-				Assert.That(diagnostics.Length, Is.EqualTo(0));
-				Assert.That(output, Does.Contain("Id = self.Id,"));
-			});
+				Id = self.Id,
+			};
+}
+";
+
+			await TestAssistants.RunAsync(code,
+				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+				Enumerable.Empty<DiagnosticResult>());
 		}
 
 		[Test]
-		public static void MapWithMatchingPropertyTypeKindAsExactAndTypesAreImplicit()
+		public static async Task MapWithMatchingPropertyTypeKindAsExactAndTypesAreImplicitAsync()
 		{
-			var (diagnostics, output) = MapTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Exact)]
@@ -162,20 +222,21 @@ public class Destination
 public class Source 
 { 
 	public B Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
-			{
-				Assert.That(diagnostics.Length, Is.GreaterThan(0));
-				Assert.That(diagnostics.Any(_ => _.Id == NoPropertyMapsFoundDiagnostic.Id), Is.True);
-				Assert.That(output, Is.EqualTo(string.Empty));
-			});
+			var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
+				.WithSpan(3, 12, 3, 110);
+			var matchDiagnostic1 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+			var matchDiagnostic2 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+			await TestAssistants.RunAsync(code,
+				Enumerable.Empty<(Type, string, string)>(),
+				new[] { mapDiagnostic, matchDiagnostic1, matchDiagnostic2 });
 		}
 
 		[Test]
-		public static void MapWithMatchingPropertyTypeKindAsImplicitAndTypesAreImplicit()
+		public static async Task MapWithMatchingPropertyTypeKindAsImplicitAndTypesAreImplicitAsync()
 		{
-			var (diagnostics, output) = MapTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Implicit)]
@@ -192,34 +253,27 @@ public class Destination
 public class Source 
 { 
 	public B Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
+			var generatedCode =
+@"using System;
+
+#nullable enable
+
+public static partial class SourceMapToExtensions
+{
+	public static Destination MapToDestination(this Source self) =>
+		self is null ? throw new ArgumentNullException(nameof(self)) :
+			new Destination
 			{
-				Assert.That(diagnostics.Length, Is.EqualTo(0));
-				Assert.That(output, Does.Contain("Id = self.Id,"));
-			});
-		}
+				Id = self.Id,
+			};
+}
+";
 
-		private static (ImmutableArray<Diagnostic>, string) GetGeneratedOutput(string source)
-		{
-			var syntaxTree = CSharpSyntaxTree.ParseText(source);
-			var references = AppDomain.CurrentDomain.GetAssemblies()
-				.Where(_ => !_.IsDynamic && !string.IsNullOrWhiteSpace(_.Location))
-				.Select(_ => MetadataReference.CreateFromFile(_.Location))
-				.Concat(new[] { MetadataReference.CreateFromFile(typeof(MapGenerator).Assembly.Location) });
-			var compilation = CSharpCompilation.Create("generator", new SyntaxTree[] { syntaxTree },
-				references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-			var originalTreeCount = compilation.SyntaxTrees.Length;
-			var generator = new MapGenerator();
-
-			var driver = CSharpGeneratorDriver.Create(ImmutableArray.Create<ISourceGenerator>(generator));
-			driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var diagnostics);
-
-			var trees = outputCompilation.SyntaxTrees.ToList();
-
-			return (diagnostics, trees.Count != originalTreeCount ? trees[^1].ToString() : string.Empty);
+			await TestAssistants.RunAsync(code,
+				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+				Enumerable.Empty<DiagnosticResult>());
 		}
 	}
 }
