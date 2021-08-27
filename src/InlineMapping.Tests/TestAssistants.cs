@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.CodeAnalysis.Testing.Verifiers;
-using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,6 +18,7 @@ namespace InlineMapping.Tests
 			var test = new GeneratorTest
 			{
 				ReferenceAssemblies = ReferenceAssemblies.Net.Net50,
+				//MarkupOptions = MarkupOptions.UseFirstDescriptor,
 				TestState =
 				{
 					Sources = { code },

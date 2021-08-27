@@ -1,14 +1,14 @@
 ﻿using InlineMapping.Descriptors;
 using InlineMapping.Extensions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 using System.Linq;
-using Maps = System.Collections.Immutable.ImmutableDictionary<(Microsoft.CodeAnalysis.INamedTypeSymbol source, Microsoft.CodeAnalysis.INamedTypeSymbol destination),
-	(System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.Diagnostic> diagnostics, Microsoft.CodeAnalysis.SyntaxNode node, System.Collections.Immutable.ImmutableArray<string> propertyNames, InlineMapping.MappingContext context)>;
 
 namespace InlineMapping
 {
+	using Maps = ImmutableDictionary<(INamedTypeSymbol source, INamedTypeSymbol destination),
+		(ImmutableArray<Diagnostic> diagnostics, SyntaxNode node, ImmutableArray<string> propertyNames, MappingContext context)>;
+
 	internal sealed class MappingInformation
 	{
 		public MappingInformation(MapReceiver receiver, Compilation compilation) =>

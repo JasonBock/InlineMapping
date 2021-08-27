@@ -35,6 +35,6 @@ namespace InlineMapping
 			}
 		}
 
-		public ImmutableHashSet<string> Values => this.builder.ToImmutable();
+		public IImmutableSet<string> Values => this.builder.ToImmutableSortedSet();
 	}
 }
