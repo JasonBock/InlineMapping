@@ -5,15 +5,17 @@ using System.Collections.Immutable;
 using System;
 using System.Linq;
 using InlineMapping.Descriptors;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Testing;
 
 namespace InlineMapping.Tests
 {
 	public static class DuplicationTests
 	{
 		[Test]
-		public static void DuplicateMapFromAndMapTo()
+		public static async Task DuplicateMapFromAndMapToAsync()
 		{
-			var (diagnostics, output) = DuplicationTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -26,20 +28,35 @@ public class Destination
 public class Source 
 { 
 	public string Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
+			var generatedCode =
+@"using System;
+
+#nullable enable
+
+public static partial class SourceMapToExtensions
+{
+	public static Destination MapToDestination(this Source self) =>
+		self is null ? throw new ArgumentNullException(nameof(self)) :
+			new Destination
 			{
-				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(diagnostics[0].Id, Is.EqualTo(DuplicatedAttributeDiagnostic.Id));
-				Assert.That(output.Length, Is.GreaterThan(0));
-			});
+				Id = self.Id,
+			};
+}
+";
+
+			var diagnostic = new DiagnosticResult(DuplicatedAttributeDiagnostic.Id, DiagnosticSeverity.Warning)
+				.WithSpan(9, 1, 13, 2);
+			await TestAssistants.RunAsync(code,
+				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+				new[] { diagnostic });
 		}
 
 		[Test]
-		public static void DuplicateMapFromAndMap()
+		public static async Task DuplicateMapFromAndMapAsync()
 		{
-			var (diagnostics, output) = DuplicationTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination))]
@@ -53,20 +70,35 @@ public class Destination
 public class Source 
 { 
 	public string Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
+			var generatedCode =
+@"using System;
+
+#nullable enable
+
+public static partial class SourceMapToExtensions
+{
+	public static Destination MapToDestination(this Source self) =>
+		self is null ? throw new ArgumentNullException(nameof(self)) :
+			new Destination
 			{
-				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(diagnostics[0].Id, Is.EqualTo(DuplicatedAttributeDiagnostic.Id));
-				Assert.That(output.Length, Is.GreaterThan(0));
-			});
+				Id = self.Id,
+			};
+}
+";
+
+			var diagnostic = new DiagnosticResult(DuplicatedAttributeDiagnostic.Id, DiagnosticSeverity.Warning)
+				.WithSpan(5, 1, 9, 2);
+			await TestAssistants.RunAsync(code,
+				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+				new[] { diagnostic });
 		}
 
 		[Test]
-		public static void DuplicateMapToAndMap()
+		public static async Task DuplicateMapToAndMapAsync()
 		{
-			var (diagnostics, output) = DuplicationTests.GetGeneratedOutput(
+			var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination))]
@@ -80,35 +112,29 @@ public class Destination
 public class Source 
 { 
 	public string Id { get; set; }
-}");
+}";
 
-			Assert.Multiple(() =>
+			var generatedCode =
+@"using System;
+
+#nullable enable
+
+public static partial class SourceMapToExtensions
+{
+	public static Destination MapToDestination(this Source self) =>
+		self is null ? throw new ArgumentNullException(nameof(self)) :
+			new Destination
 			{
-				Assert.That(diagnostics.Length, Is.EqualTo(1));
-				Assert.That(diagnostics[0].Id, Is.EqualTo(DuplicatedAttributeDiagnostic.Id));
-				Assert.That(output.Length, Is.GreaterThan(0));
-			});
-		}
+				Id = self.Id,
+			};
+}
+";
 
-		private static (ImmutableArray<Diagnostic>, string) GetGeneratedOutput(string source)
-		{
-			var syntaxTree = CSharpSyntaxTree.ParseText(source);
-			var references = AppDomain.CurrentDomain.GetAssemblies()
-				.Where(_ => !_.IsDynamic && !string.IsNullOrWhiteSpace(_.Location))
-				.Select(_ => MetadataReference.CreateFromFile(_.Location))
-				.Concat(new[] { MetadataReference.CreateFromFile(typeof(MapGenerator).Assembly.Location) });
-			var compilation = CSharpCompilation.Create("generator", new SyntaxTree[] { syntaxTree },
-				references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-			var originalTreeCount = compilation.SyntaxTrees.Length;
-			var generator = new MapGenerator();
-
-			var driver = CSharpGeneratorDriver.Create(ImmutableArray.Create<ISourceGenerator>(generator));
-			driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var diagnostics);
-
-			var trees = outputCompilation.SyntaxTrees.ToList();
-
-			return (diagnostics, trees.Count != originalTreeCount ? trees[^1].ToString() : string.Empty);
+			var diagnostic = new DiagnosticResult(DuplicatedAttributeDiagnostic.Id, DiagnosticSeverity.Warning)
+				.WithSpan(10, 1, 14, 2);
+			await TestAssistants.RunAsync(code,
+				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+				new[] { diagnostic });
 		}
 	}
 }
