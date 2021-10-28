@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using BenchmarkDotNet.Attributes;
+using Csla.Data;
+using Mapster;
+using ServiceStack;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -9,7 +12,7 @@ namespace InlineMapping.PerformanceTests
 	[MemoryDiagnoser]
 	public class MappingTests
 	{
-		private readonly Source source = new()
+		public readonly Source source = new()
 		{
 			Age = 22,
 			Buffer = Guid.NewGuid().ToByteArray(),
@@ -22,10 +25,10 @@ namespace InlineMapping.PerformanceTests
 			new MapperConfiguration(_ => _.CreateMap<Source, Destination>()).CreateMapper();
 
 		[Benchmark(Baseline = true)]
-		public Destination MapUsingInline() => this.source.MapToDestination();
+		public Destination InlineMapping() => this.source.MapToDestination();
 
 		[Benchmark]
-		public Destination MapUsingReflection()
+		public Destination Reflection()
 		{
 			var destination = new Destination();
 			var destinationProperties = typeof(Destination).GetProperties(BindingFlags.Instance | BindingFlags.Public)
@@ -48,6 +51,32 @@ namespace InlineMapping.PerformanceTests
 		}
 
 		[Benchmark]
-		public Destination MapUsingAutoMapper() => this.mapper.Map<Destination>(this.source);
+		public Destination AutoMapper() => this.mapper.Map<Destination>(this.source);
+
+		[Benchmark]
+		public Destination Mapster() => this.source.Adapt<Destination>();
+
+		[Benchmark]
+		public Destination MappingGenerator() => MappingTests.Map(this.source);
+
+		[Benchmark]
+		public Destination ServiceStack() => this.source.ConvertTo<Destination>();
+
+		[Benchmark]
+		public Destination Csla()
+		{
+			var destination = new Destination();
+			DataMapper.Map(this.source, destination);
+			return destination;
+		}
+
+		private static Destination Map(Source source) => new Destination
+		{
+			Age = source.Age,
+			Buffer = source.Buffer,
+			Id = source.Id,
+			Name = source.Name,
+			When = source.When
+		};
 	}
 }
