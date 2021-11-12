@@ -1,34 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <AssemblyName>InlineMapping.Tests</AssemblyName>
-    <RootNamespace>InlineMapping.Tests</RootNamespace>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="StrykerOutput\**" />
-    <EmbeddedResource Remove="StrykerOutput\**" />
-    <None Remove="StrykerOutput\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\InlineMapping\InlineMapping.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.NUnit" Version="1.1.0">
-      <NoWarn>NU1608</NoWarn>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0">
-      <NoWarn>NU1608</NoWarn>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.11.0">
-      <NoWarn>NU1608</NoWarn>
-    </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-    <PackageReference Include="NUnit" Version="3.13.2" />
-    <PackageReference Include="NUnit.Analyzers" Version="3.1.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Rocks" Version="6.0.0" />
-  </ItemGroup>
+	<PropertyGroup>
+		<AssemblyName>InlineMapping.Tests</AssemblyName>
+		<RootNamespace>InlineMapping.Tests</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="StrykerOutput\**" />
+		<EmbeddedResource Remove="StrykerOutput\**" />
+		<None Remove="StrykerOutput\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\InlineMapping\InlineMapping.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.NUnit" Version="1.1.0">
+			<NoWarn>NU1608</NoWarn>
+		</PackageReference>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1">
+			<NoWarn>NU1608</NoWarn>
+		</PackageReference>
+		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.0.1">
+			<NoWarn>NU1608</NoWarn>
+		</PackageReference>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+		<PackageReference Include="NUnit" Version="3.13.2" />
+		<PackageReference Include="NUnit.Analyzers" Version="3.2.0" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.1.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Rocks" Version="6.2.0" />
+	</ItemGroup>
 </Project>

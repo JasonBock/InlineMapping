@@ -1,11 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <!-- Have to set this to false because of https://github.com/dotnet/roslyn-analyzers/issues/4068 -->
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\InlineMapping\InlineMapping.csproj" OutputItemType="Analyzer" />
-  </ItemGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\InlineMapping\InlineMapping.csproj" OutputItemType="Analyzer" />
+	</ItemGroup>
 </Project>

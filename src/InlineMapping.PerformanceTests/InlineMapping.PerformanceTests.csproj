@@ -1,17 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <!-- Have to set this to false because of https://github.com/dotnet/roslyn-analyzers/issues/4068 -->
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="10.1.1" />
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
-    <PackageReference Include="Csla" Version="5.5.1" />
-    <PackageReference Include="MappingGenerator" Version="2021.10.30" />
-    <PackageReference Include="Mapster" Version="7.2.0" />
-    <PackageReference Include="ServiceStack" Version="5.12.0" />
-    <ProjectReference Include="..\InlineMapping\InlineMapping.csproj" OutputItemType="Analyzer" />
-  </ItemGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="10.1.1" />
+		<PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+		<PackageReference Include="Csla" Version="5.5.1" />
+		<PackageReference Include="MappingGenerator" Version="2021.10.30" />
+		<PackageReference Include="Mapster" Version="7.2.0" />
+		<PackageReference Include="ServiceStack" Version="5.13.0" />
+		<ProjectReference Include="..\InlineMapping\InlineMapping.csproj" OutputItemType="Analyzer" />
+	</ItemGroup>
 </Project>

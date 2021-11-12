@@ -1,10 +1,12 @@
 <Project>
-  <PropertyGroup>
-    <Authors>Jason Bock</Authors>
-    <Copyright>Copyright © 2021</Copyright>
-    <LangVersion>9.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Version>1.4.0</Version>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Authors>Jason Bock</Authors>
+		<Copyright>Copyright © 2021</Copyright>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<TargetFramework>net6.0</TargetFramework>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<Version>1.5.0</Version>
+	</PropertyGroup>
 </Project>
