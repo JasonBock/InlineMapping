@@ -1,7 +1,6 @@
-﻿namespace InlineMapping.Descriptors
+﻿namespace InlineMapping.Diagnostics;
+
+internal static class DescriptorConstants
 {
-	public static class DescriptorConstants
-	{
-		public const string Usage = nameof(DescriptorConstants.Usage);
-	}
+   internal const string Usage = nameof(DescriptorConstants.Usage);
 }

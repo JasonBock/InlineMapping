@@ -1,5 +1,4 @@
 ﻿using InlineMapping.Host;
-using System;
 
 var source = new Source
 {

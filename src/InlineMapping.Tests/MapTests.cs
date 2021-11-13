@@ -1,21 +1,16 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿using InlineMapping.Diagnostics;
 using Microsoft.CodeAnalysis;
-using NUnit.Framework;
-using System.Collections.Immutable;
-using System;
-using System.Linq;
-using InlineMapping.Descriptors;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Testing;
+using NUnit.Framework;
 
-namespace InlineMapping.Tests
+namespace InlineMapping.Tests;
+
+public static class MapTests
 {
-	public static class MapTests
-	{
-		[Test]
-		public static async Task MapToSelfAsync()
-		{
-			var code =
+   [Test]
+   public static async Task MapToSelfAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Source))]
@@ -25,7 +20,7 @@ public class Source
 	public string Id { get; set; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -41,15 +36,15 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Source_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Source_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task MapWithSourcePropertyHavingInternalGetterAsync()
-		{
-			var code =
+   [Test]
+   public static async Task MapWithSourcePropertyHavingInternalGetterAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination))]
@@ -64,7 +59,7 @@ public class Destination
 	public string Id { get; set; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -80,15 +75,15 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task MapWithDestinationPropertyHavingInternalSetterAsync()
-		{
-			var code =
+   [Test]
+   public static async Task MapWithDestinationPropertyHavingInternalSetterAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination))]
@@ -103,7 +98,7 @@ public class Destination
 	internal string Id { get; set; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -119,15 +114,15 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task MapWithMatchingPropertyTypeKindAsExactAndTypesAreExactAsync()
-		{
-			var code =
+   [Test]
+   public static async Task MapWithMatchingPropertyTypeKindAsExactAndTypesAreExactAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Exact)]
@@ -142,7 +137,7 @@ public class Source
 	public string Id { get; set; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -158,15 +153,15 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task MapWithMatchingPropertyTypeKindAsImplicitAndTypesAreExactAsync()
-		{
-			var code =
+   [Test]
+   public static async Task MapWithMatchingPropertyTypeKindAsImplicitAndTypesAreExactAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Implicit)]
@@ -181,7 +176,7 @@ public class Source
 	public string Id { get; set; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -197,15 +192,15 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task MapWithMatchingPropertyTypeKindAsExactAndTypesAreImplicitAsync()
-		{
-			var code =
+   [Test]
+   public static async Task MapWithMatchingPropertyTypeKindAsExactAndTypesAreImplicitAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Exact)]
@@ -224,19 +219,19 @@ public class Source
 	public B Id { get; set; }
 }";
 
-			var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-				.WithSpan(3, 12, 3, 110);
-			var matchDiagnostic1 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
-			var matchDiagnostic2 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
-			await TestAssistants.RunAsync(code,
-				Enumerable.Empty<(Type, string, string)>(),
-				new[] { mapDiagnostic, matchDiagnostic1, matchDiagnostic2 });
-		}
+	  var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
+		  .WithSpan(3, 12, 3, 110);
+	  var matchDiagnostic1 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+	  var matchDiagnostic2 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+	  await TestAssistants.RunAsync(code,
+		  Enumerable.Empty<(Type, string, string)>(),
+		  new[] { mapDiagnostic, matchDiagnostic1, matchDiagnostic2 }).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task MapWithMatchingPropertyTypeKindAsImplicitAndTypesAreImplicitAsync()
-		{
-			var code =
+   [Test]
+   public static async Task MapWithMatchingPropertyTypeKindAsImplicitAndTypesAreImplicitAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [assembly: Map(typeof(Source), typeof(Destination), matchingPropertyTypeKind: MatchingPropertyTypeKind.Implicit)]
@@ -255,7 +250,7 @@ public class Source
 	public B Id { get; set; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -271,9 +266,8 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
-	}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 }

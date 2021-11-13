@@ -1,8 +1,7 @@
-﻿namespace InlineMapping
+﻿namespace InlineMapping;
+
+public enum MatchingPropertyTypeKind
 {
-	public enum MatchingPropertyTypeKind
-	{
-		Implicit, 
-		Exact
-	}
+   Implicit,
+   Exact
 }

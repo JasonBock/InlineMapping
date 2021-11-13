@@ -1,21 +1,16 @@
-﻿using InlineMapping.Descriptors;
+﻿using InlineMapping.Diagnostics;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Testing;
 using NUnit.Framework;
-using System;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace InlineMapping.Tests
+namespace InlineMapping.Tests;
+
+public static class MapGeneratorMapFromTests
 {
-	public static class MapGeneratorMapFromTests
-	{
-		[Test]
-		public static async Task GenerateWithClassesAsync()
-		{
-			var code = 
+   [Test]
+   public static async Task GenerateWithClassesAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -29,7 +24,7 @@ public class Source
 	public string Id { get; set; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -45,15 +40,15 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWithStructsAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWithStructsAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -67,7 +62,7 @@ public struct Source
 	public string Id { get; set; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"#nullable enable
 
 public static partial class SourceMapToExtensions
@@ -80,15 +75,15 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWithRecordsAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWithRecordsAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -102,7 +97,7 @@ public record Source
 	public string Id { get; init; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -118,15 +113,15 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenSourceIsInNamespaceAndDestinationIsNotInNamespaceAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenSourceIsInNamespaceAndDestinationIsNotInNamespaceAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(SourceNamespace.Source))]
@@ -143,7 +138,7 @@ namespace SourceNamespace
 	}
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -162,15 +157,15 @@ namespace SourceNamespace
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenSourceIsNotInNamespaceAndDestinationIsInNamespaceAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenSourceIsNotInNamespaceAndDestinationIsInNamespaceAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 namespace DestinationNamespace
@@ -187,7 +182,7 @@ public class Source
 	public string Id { get; set; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using DestinationNamespace;
 using System;
 
@@ -204,15 +199,15 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenDestinationIsInSourceNamespaceAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenDestinationIsInSourceNamespaceAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 namespace BaseNamespace
@@ -232,7 +227,7 @@ namespace BaseNamespace.SubNamespace
 	}
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -251,15 +246,15 @@ namespace BaseNamespace.SubNamespace
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>()); 
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenDestinationIsNotInSourceNamespaceAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenDestinationIsNotInSourceNamespaceAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 namespace DestinationNamespace
@@ -279,7 +274,7 @@ namespace SourceNamespace
 	}
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using DestinationNamespace;
 using System;
 
@@ -299,15 +294,15 @@ namespace SourceNamespace
 }
 ";
 
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				Enumerable.Empty<DiagnosticResult>());
-		}
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenNoPropertiesExistAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenNoPropertiesExistAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -315,17 +310,17 @@ public class Destination { }
 
 public class Source { }";
 
-			var diagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-				.WithSpan(3, 1, 4, 29);
-			await TestAssistants.RunAsync(code,
-				Enumerable.Empty<(Type, string, string)>(),
-				new[] { diagnostic });
-		}
+	  var diagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
+		  .WithSpan(3, 1, 4, 29);
+	  await TestAssistants.RunAsync(code,
+		  Enumerable.Empty<(Type, string, string)>(),
+		  new[] { diagnostic }).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenSourcePropertyIsNotPublicAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenSourcePropertyIsNotPublicAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -339,18 +334,18 @@ public class Source
 	private string Id { get; set; }
 }";
 
-			var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-				.WithSpan(3, 1, 7, 2);
-			var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
-			await TestAssistants.RunAsync(code,
-				Enumerable.Empty<(Type, string, string)>(),
-				new[] { mapDiagnostic, matchDiagnostic });
-		}
+	  var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
+		  .WithSpan(3, 1, 7, 2);
+	  var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+	  await TestAssistants.RunAsync(code,
+		  Enumerable.Empty<(Type, string, string)>(),
+		  new[] { mapDiagnostic, matchDiagnostic }).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenDestinationPropertyIsNotPublicAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenDestinationPropertyIsNotPublicAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -364,18 +359,18 @@ public class Source
 	public string Id { get; set; }
 }";
 
-			var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-				.WithSpan(3, 1, 7, 2);
-			var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
-			await TestAssistants.RunAsync(code,
-				Enumerable.Empty<(Type, string, string)>(),
-				new[] { mapDiagnostic, matchDiagnostic });
-		}
+	  var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
+		  .WithSpan(3, 1, 7, 2);
+	  var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+	  await TestAssistants.RunAsync(code,
+		  Enumerable.Empty<(Type, string, string)>(),
+		  new[] { mapDiagnostic, matchDiagnostic }).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenSourceGetterIsNotPublicAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenSourceGetterIsNotPublicAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -389,18 +384,18 @@ public class Source
 	public string Id { private get; set; }
 }";
 
-			var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-				.WithSpan(3, 1, 7, 2);
-			var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
-			await TestAssistants.RunAsync(code,
-				Enumerable.Empty<(Type, string, string)>(),
-				new[] { mapDiagnostic, matchDiagnostic });
-		}
+	  var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
+		  .WithSpan(3, 1, 7, 2);
+	  var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+	  await TestAssistants.RunAsync(code,
+		  Enumerable.Empty<(Type, string, string)>(),
+		  new[] { mapDiagnostic, matchDiagnostic }).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenDestinationSetterIsNotPublicAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenDestinationSetterIsNotPublicAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -414,18 +409,18 @@ public class Source
 	public string Id { get; set; }
 }";
 
-			var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-				.WithSpan(3, 1, 7, 2);
-			var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
-			await TestAssistants.RunAsync(code,
-				Enumerable.Empty<(Type, string, string)>(),
-				new[] { mapDiagnostic, matchDiagnostic });
-		}
+	  var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
+		  .WithSpan(3, 1, 7, 2);
+	  var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+	  await TestAssistants.RunAsync(code,
+		  Enumerable.Empty<(Type, string, string)>(),
+		  new[] { mapDiagnostic, matchDiagnostic }).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenDestinationHasNoAccessibleConstructorAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenDestinationHasNoAccessibleConstructorAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -441,17 +436,17 @@ public class Source
 	public string Id { get; set; }
 }";
 
-			var diagnostic = new DiagnosticResult(NoAccessibleConstructorsDiagnostic.Id, DiagnosticSeverity.Error)
-				.WithSpan(3, 1, 9, 2);
-			await TestAssistants.RunAsync(code,
-				Enumerable.Empty<(Type, string, string)>(),
-				new[] { diagnostic });
-		}
+	  var diagnostic = new DiagnosticResult(NoAccessibleConstructorsDiagnostic.Id, DiagnosticSeverity.Error)
+		  .WithSpan(3, 1, 9, 2);
+	  await TestAssistants.RunAsync(code,
+		  Enumerable.Empty<(Type, string, string)>(),
+		  new[] { diagnostic }).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenSourceDoesNotMapAllPropertiesAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenSourceDoesNotMapAllPropertiesAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -466,7 +461,7 @@ public class Source
 	public string Name { get; set; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -482,16 +477,16 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			var diagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				new[] { diagnostic });
-		}
+	  var diagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  new[] { diagnostic }).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenDestinationDoesNotMapAllPropertiesAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenDestinationDoesNotMapAllPropertiesAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -506,7 +501,7 @@ public class Source
 	public string Id { get; set; }
 }";
 
-			var generatedCode =
+	  var generatedCode =
 @"using System;
 
 #nullable enable
@@ -522,16 +517,16 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-			var diagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
-			await TestAssistants.RunAsync(code,
-				new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-				new[] { diagnostic });
-		}
+	  var diagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+	  await TestAssistants.RunAsync(code,
+		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
+		  new[] { diagnostic }).ConfigureAwait(false);
+   }
 
-		[Test]
-		public static async Task GenerateWhenPropertyTypesDoNotMatchAsync()
-		{
-			var code =
+   [Test]
+   public static async Task GenerateWhenPropertyTypesDoNotMatchAsync()
+   {
+	  var code =
 @"using InlineMapping;
 
 [MapFrom(typeof(Source))]
@@ -545,13 +540,12 @@ public class Source
 	public int Id { get; set; }
 }";
 
-			var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-				.WithSpan(3, 1, 7, 2);
-			var matchDiagnostic1 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
-			var matchDiagnostic2 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
-			await TestAssistants.RunAsync(code,
-				Enumerable.Empty<(Type, string, string)>(),
-				new[] { mapDiagnostic, matchDiagnostic1, matchDiagnostic2 });
-		}
-	}
+	  var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
+		  .WithSpan(3, 1, 7, 2);
+	  var matchDiagnostic1 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+	  var matchDiagnostic2 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
+	  await TestAssistants.RunAsync(code,
+		  Enumerable.Empty<(Type, string, string)>(),
+		  new[] { mapDiagnostic, matchDiagnostic1, matchDiagnostic2 }).ConfigureAwait(false);
+   }
 }

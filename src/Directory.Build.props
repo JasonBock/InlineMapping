@@ -1,5 +1,6 @@
 <Project>
 	<PropertyGroup>
+		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 		<Authors>Jason Bock</Authors>
 		<Copyright>Copyright © 2021</Copyright>
 		<ImplicitUsings>enable</ImplicitUsings>

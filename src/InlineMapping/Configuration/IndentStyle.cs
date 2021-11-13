@@ -1,7 +1,6 @@
-﻿namespace InlineMapping.Configuration
+﻿namespace InlineMapping.Configuration;
+
+public enum IndentStyle
 {
-	public enum IndentStyle
-	{
-		Tab, Space
-	}
+   Tab, Space
 }

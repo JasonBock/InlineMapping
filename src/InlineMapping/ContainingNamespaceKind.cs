@@ -1,9 +1,8 @@
-﻿namespace InlineMapping
+﻿namespace InlineMapping;
+
+public enum ContainingNamespaceKind
 {
-	public enum ContainingNamespaceKind
-	{
-		Source,
-		Destination,
-		Global
-	}
+   Source,
+   Destination,
+   Global
 }

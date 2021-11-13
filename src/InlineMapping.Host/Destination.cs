@@ -1,11 +1,8 @@
-﻿using System;
+﻿namespace InlineMapping.Host;
 
-namespace InlineMapping.Host
+public class Destination
 {
-	public class Destination
-	{
-		public uint Age { get; set; }
-		public Guid Id { get; set; }
-		public string? Name { get; set; }
-	}
+   public uint Age { get; set; }
+   public Guid Id { get; set; }
+   public string? Name { get; set; }
 }
