@@ -92,7 +92,7 @@ internal sealed class MapIncrementalGenerator
 				  var information = new MappingIncrementalInformation(
 					  node!, source, destination, mappingContext, compilation);
 
-				  if (information.Diagnostics.Any(_ => _.Severity == DiagnosticSeverity.Error))
+				  if (!information.Diagnostics.Any(_ => _.Severity == DiagnosticSeverity.Error))
 				  {
 					 // generate the source.
 					 var configuration = new ConfigurationValues(options, node!.SyntaxTree);
