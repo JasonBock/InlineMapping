@@ -46,44 +46,6 @@ public static partial class SourceMapToExtensions
 	}
 
 	[Test]
-	public static async Task GenerateIncrementalWithClassesAsync()
-	{
-		var code =
- @"using InlineMapping;
-
-public class Destination 
-{ 
-	public string Id { get; set; }
-}
-
-[MapTo(typeof(Destination))]
-public class Source 
-{ 
-	public string Id { get; set; }
-}";
-
-		var generatedCode =
- @"using System;
-
-#nullable enable
-
-public static partial class SourceMapToExtensions
-{
-	public static Destination MapToDestination(this Source self) =>
-		self is null ? throw new ArgumentNullException(nameof(self)) :
-			new Destination
-			{
-				Id = self.Id,
-			};
-}
-";
-
-		await TestAssistants.RunIncrementalAsync(code,
-			new[] { (typeof(MapIncrementalGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
-	}
-
-	[Test]
 	public static async Task GenerateWithStructsAsync()
 	{
 		var code =
@@ -113,44 +75,8 @@ public static partial class SourceMapToExtensions
 }
 ";
 
-		var generator = new MapIncrementalGenerator().AsSourceGenerator();
 		await TestAssistants.RunAsync(code,
 			new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
-	}
-
-	[Test]
-	public static async Task GenerateIncrementalWithStructsAsync()
-	{
-		var code =
- @"using InlineMapping;
-
-public struct Destination 
-{ 
-	public string Id { get; set; }
-}
-
-[MapTo(typeof(Destination))]
-public struct Source 
-{ 
-	public string Id { get; set; }
-}";
-
-		var generatedCode =
- @"#nullable enable
-
-public static partial class SourceMapToExtensions
-{
-	public static Destination MapToDestination(this Source self) =>
-		new Destination
-		{
-			Id = self.Id,
-		};
-}
-";
-
-		await TestAssistants.RunIncrementalAsync(code,
-			new[] { (typeof(MapIncrementalGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
 
@@ -189,44 +115,6 @@ public static partial class SourceMapToExtensions
 
 		await TestAssistants.RunAsync(code,
 			new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
-	}
-
-	[Test]
-	public static async Task GenerateIncrementalWithRecordsAsync()
-	{
-		var code =
- @"using InlineMapping;
-
-public class Destination 
-{ 
-	public string Id { get; set; }
-}
-
-[MapTo(typeof(Destination))]
-public class Source 
-{ 
-	public string Id { get; set; }
-}";
-
-		var generatedCode =
- @"using System;
-
-#nullable enable
-
-public static partial class SourceMapToExtensions
-{
-	public static Destination MapToDestination(this Source self) =>
-		self is null ? throw new ArgumentNullException(nameof(self)) :
-			new Destination
-			{
-				Id = self.Id,
-			};
-}
-";
-
-		await TestAssistants.RunIncrementalAsync(code,
-			new[] { (typeof(MapIncrementalGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
 
@@ -271,50 +159,6 @@ namespace SourceNamespace
 
 		await TestAssistants.RunAsync(code,
 			new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
-	}
-
-	[Test]
-	public static async Task GenerateIncrementalWhenSourceIsInNamespaceAndDestinationIsNotInNamespaceAsync()
-	{
-		var code =
- @"using InlineMapping;
-
-public class Destination 
-{ 
-	public string Id { get; set; }
-}
-
-namespace SourceNamespace
-{
-	[MapTo(typeof(Destination))]
-	public class Source 
-	{ 
-		public string Id { get; set; }
-	}
-}";
-
-		var generatedCode =
- @"using System;
-
-#nullable enable
-
-namespace SourceNamespace
-{
-	public static partial class SourceMapToExtensions
-	{
-		public static Destination MapToDestination(this Source self) =>
-			self is null ? throw new ArgumentNullException(nameof(self)) :
-				new Destination
-				{
-					Id = self.Id,
-				};
-	}
-}
-";
-
-		await TestAssistants.RunIncrementalAsync(code,
-			new[] { (typeof(MapIncrementalGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
 
@@ -486,7 +330,7 @@ public class Source { }";
 
 		var diagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
 			.WithSpan(5, 1, 6, 24);
-		await TestAssistants.RunIncrementalAsync(code,
+		await TestAssistants.RunAsync(code,
 			Enumerable.Empty<(Type, string, string)>(),
 			new[] { diagnostic }).ConfigureAwait(false);
 	}
