@@ -335,7 +335,7 @@ public class Source
 }";
 
 		var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-			.WithSpan(8, 1, 12, 2);
+			.WithSpan(8, 2, 8, 28);
 		var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 		await TestAssistants.RunAsync(code,
 			Enumerable.Empty<(Type, string, string)>(),
@@ -360,7 +360,7 @@ public class Source
 }";
 
 		var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-			.WithSpan(8, 1, 12, 2);
+			.WithSpan(8, 2, 8, 28);
 		var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 		await TestAssistants.RunAsync(code,
 			Enumerable.Empty<(Type, string, string)>(),
@@ -385,7 +385,7 @@ public class Source
 }";
 
 		var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-			.WithSpan(8, 1, 12, 2);
+			.WithSpan(8, 2, 8, 28);
 		var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 		await TestAssistants.RunAsync(code,
 			Enumerable.Empty<(Type, string, string)>(),
@@ -410,7 +410,7 @@ public class Source
 }";
 
 		var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-			.WithSpan(8, 1, 12, 2);
+			.WithSpan(8, 2, 8, 28);
 		var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 		await TestAssistants.RunAsync(code,
 			Enumerable.Empty<(Type, string, string)>(),
@@ -437,7 +437,7 @@ public class Source
 }";
 
 		var diagnostic = new DiagnosticResult(NoAccessibleConstructorsDiagnostic.Id, DiagnosticSeverity.Error)
-			.WithSpan(10, 1, 14, 2);
+			.WithSpan(10, 2, 10, 28);
 		await TestAssistants.RunAsync(code,
 			Enumerable.Empty<(Type, string, string)>(),
 			new[] { diagnostic }).ConfigureAwait(false);
@@ -541,7 +541,7 @@ public class Source
 }";
 
 		var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-			.WithSpan(8, 1, 12, 2);
+			.WithSpan(8, 2, 8, 28);
 		var matchDiagnostic1 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 		var matchDiagnostic2 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 		await TestAssistants.RunAsync(code,

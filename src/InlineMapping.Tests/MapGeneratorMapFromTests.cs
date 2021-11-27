@@ -311,7 +311,7 @@ public class Destination { }
 public class Source { }";
 
 	  var diagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-		  .WithSpan(3, 1, 4, 29);
+		  .WithSpan(3, 2, 3, 25);
 	  await TestAssistants.RunAsync(code,
 		  Enumerable.Empty<(Type, string, string)>(),
 		  new[] { diagnostic }).ConfigureAwait(false);
@@ -335,7 +335,7 @@ public class Source
 }";
 
 	  var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-		  .WithSpan(3, 1, 7, 2);
+		  .WithSpan(3, 2, 3, 25);
 	  var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 	  await TestAssistants.RunAsync(code,
 		  Enumerable.Empty<(Type, string, string)>(),
@@ -360,7 +360,7 @@ public class Source
 }";
 
 	  var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-		  .WithSpan(3, 1, 7, 2);
+		  .WithSpan(3, 2, 3, 25);
 	  var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 	  await TestAssistants.RunAsync(code,
 		  Enumerable.Empty<(Type, string, string)>(),
@@ -385,7 +385,7 @@ public class Source
 }";
 
 	  var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-		  .WithSpan(3, 1, 7, 2);
+		  .WithSpan(3, 2, 3, 25);
 	  var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 	  await TestAssistants.RunAsync(code,
 		  Enumerable.Empty<(Type, string, string)>(),
@@ -410,7 +410,7 @@ public class Source
 }";
 
 	  var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-		  .WithSpan(3, 1, 7, 2);
+		  .WithSpan(3, 2, 3, 25);
 	  var matchDiagnostic = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 	  await TestAssistants.RunAsync(code,
 		  Enumerable.Empty<(Type, string, string)>(),
@@ -437,7 +437,7 @@ public class Source
 }";
 
 	  var diagnostic = new DiagnosticResult(NoAccessibleConstructorsDiagnostic.Id, DiagnosticSeverity.Error)
-		  .WithSpan(3, 1, 9, 2);
+		  .WithSpan(3, 2, 3, 25);
 	  await TestAssistants.RunAsync(code,
 		  Enumerable.Empty<(Type, string, string)>(),
 		  new[] { diagnostic }).ConfigureAwait(false);
@@ -541,7 +541,7 @@ public class Source
 }";
 
 	  var mapDiagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-		  .WithSpan(3, 1, 7, 2);
+		  .WithSpan(3, 2, 3, 25);
 	  var matchDiagnostic1 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 	  var matchDiagnostic2 = new DiagnosticResult(NoMatchDiagnostic.Id, DiagnosticSeverity.Info);
 	  await TestAssistants.RunAsync(code,
