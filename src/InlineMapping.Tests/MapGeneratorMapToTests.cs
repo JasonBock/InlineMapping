@@ -311,25 +311,7 @@ public class Destination { }
 public class Source { }";
 
 		var diagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-			.WithSpan(5, 1, 6, 24);
-		await TestAssistants.RunAsync(code,
-			Enumerable.Empty<(Type, string, string)>(),
-			new[] { diagnostic }).ConfigureAwait(false);
-	}
-
-	[Test]
-	public static async Task GenerateIncrementalWhenNoPropertiesExistAsync()
-	{
-		var code =
- @"using InlineMapping;
-
-public class Destination { }
-
-[MapTo(typeof(Destination))]
-public class Source { }";
-
-		var diagnostic = new DiagnosticResult(NoPropertyMapsFoundDiagnostic.Id, DiagnosticSeverity.Error)
-			.WithSpan(5, 1, 6, 24);
+			.WithSpan(5, 2, 5, 28);
 		await TestAssistants.RunAsync(code,
 			Enumerable.Empty<(Type, string, string)>(),
 			new[] { diagnostic }).ConfigureAwait(false);
