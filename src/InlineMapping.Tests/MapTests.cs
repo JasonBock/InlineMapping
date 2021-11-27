@@ -42,7 +42,7 @@ public static partial class SourceMapToExtensions
 }
 ";
 		var duplicateDiagnostic = new DiagnosticResult(DuplicatedAttributeDiagnostic.Id, DiagnosticSeverity.Warning)
-			.WithSpan(5, 1, 9, 2).WithArguments("Map(typeof(Source), typeof(Destination))");
+			.WithSpan(5, 2, 5, 28).WithArguments("Map(typeof(Source), typeof(Destination))");
 		await TestAssistants.RunAsync(code,
 			new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
 			new[] { duplicateDiagnostic }).ConfigureAwait(false);

@@ -42,7 +42,7 @@ public static partial class SourceMapToExtensions
 ";
 
 	  var diagnostic = new DiagnosticResult(DuplicatedAttributeDiagnostic.Id, DiagnosticSeverity.Warning)
-		  .WithSpan(9, 1, 13, 2);
+		  .WithSpan(9, 2, 9, 28);
 	  await TestAssistants.RunAsync(code,
 		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
 		  new[] { diagnostic }).ConfigureAwait(false);
@@ -84,7 +84,7 @@ public static partial class SourceMapToExtensions
 ";
 
 	  var diagnostic = new DiagnosticResult(DuplicatedAttributeDiagnostic.Id, DiagnosticSeverity.Warning)
-		  .WithSpan(5, 1, 9, 2);
+		  .WithSpan(5, 2, 5, 25);
 	  await TestAssistants.RunAsync(code,
 		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
 		  new[] { diagnostic }).ConfigureAwait(false);
@@ -126,7 +126,7 @@ public static partial class SourceMapToExtensions
 ";
 
 	  var diagnostic = new DiagnosticResult(DuplicatedAttributeDiagnostic.Id, DiagnosticSeverity.Warning)
-		  .WithSpan(10, 1, 14, 2);
+		  .WithSpan(10, 2, 10, 28);
 	  await TestAssistants.RunAsync(code,
 		  new[] { (typeof(MapGenerator), "Source_To_Destination_Map.g.cs", generatedCode) },
 		  new[] { diagnostic }).ConfigureAwait(false);

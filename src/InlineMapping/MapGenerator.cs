@@ -36,9 +36,10 @@ internal sealed class MapGenerator
 			if (symbol is not null)
 			{
 				// Now we're checking to see if the containing symbol of the method symbol
-				// we just found is the same as either [MapFrom] or [MapTo].
+				// we just found is the same as either [MapFrom], [MapTo], or [Map].
 				var mapFromAttributeSymbol = model.Compilation.GetTypeByMetadataName(typeof(MapFromAttribute).FullName);
 				var mapToAttributeSymbol = model.Compilation.GetTypeByMetadataName(typeof(MapToAttribute).FullName);
+				var mapAttributeSymbol = model.Compilation.GetTypeByMetadataName(typeof(MapAttribute).FullName);
 
 				if (SymbolEqualityComparer.Default.Equals(symbol.ContainingSymbol, mapToAttributeSymbol))
 				{
@@ -66,14 +67,7 @@ internal sealed class MapGenerator
 								(MatchingPropertyTypeKind)attributeData.ConstructorArguments[2].Value!));
 					}
 				}
-			}
-			else
-			{
-				// Now we're checking to see if the containing symbol of the method symbol
-				// we just found is the same as [Map].
-				var mapAttributeSymbol = model.Compilation.GetTypeByMetadataName(typeof(MapAttribute).FullName);
-
-				if (SymbolEqualityComparer.Default.Equals(symbol, mapAttributeSymbol))
+				else if (SymbolEqualityComparer.Default.Equals(symbol.ContainingSymbol, mapAttributeSymbol))
 				{
 					var attributeData = node.GetAttributeData(model);
 
